@@ -1,14 +1,6 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(shinythemes)
+library(DT)
 
 shinyUI(fluidPage(
 
@@ -16,12 +8,12 @@ shinyUI(fluidPage(
     titlePanel("기업HR근속률과 영향을 미치는 요인"),
     # titlePanel(title=div(img(height = 65, width = 150, src="kpmglogo.jpg"))),
     navbarPage("처음",
-            theme = shinythemes::shinytheme("cerulean"),  # <--- Specify theme here
-               tabPanel("첫 번째 메뉴", 
+                theme = shinythemes::shinytheme("cerulean"),  # <--- Specify theme here
+                tabPanel("첫 번째 메뉴", 
                         # Create a new row for the table.
                         DT::dataTableOutput("table")
                         ),
-               tabPanel("두 번째 메뉴", 
+                tabPanel("두 번째 메뉴", 
 
                         sidebarLayout(
                             
