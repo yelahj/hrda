@@ -1,0 +1,51 @@
+/* custom.css */
+
+@import url(//fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
+body, table, div, p{ 
+    font-family: 'Nanum Gothic';
+}
+
+.main-header .logo {
+        font-weight: bold;
+        font-size: 24px;
+      }
+/* logo */
+.skin-blue .main-header .logo {
+            background-color: #0F4C81;
+            }
+
+/* logo when hovered */
+.skin-blue .main-header .logo:hover {
+            background-color: #0F4C81;
+            }
+
+/* navbar (rest of the header) */
+.skin-blue .main-header .navbar {
+            background-color: #0F4C81;
+            }        
+
+/* main sidebar */
+.skin-blue .main-sidebar {
+            background-color: #0F4C81;
+            }
+
+/* active selected tab in the sidebarmenu */
+.skin-blue .main-sidebar .sidebar .sidebar-menu .active a{
+            background-color: #0F4C81;
+            }
+
+/* other links in the sidebarmenu */
+.skin-blue .main-sidebar .sidebar .sidebar-menu a{
+            background-color: #0F4C81;
+            color: #FFFFFF;
+            }
+
+/* other links in the sidebarmenu when hovered */
+.skin-blue .main-sidebar .sidebar .sidebar-menu a:hover{
+            background-color: #0F4C81;
+            }
+/* toggle button when hovered  */                    
+.skin-blue .main-header .navbar .sidebar-toggle:hover{
+            background-color: #0F4C81;
+            }

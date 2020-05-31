@@ -1,0 +1,18 @@
+
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+```
+
+# 데이터 미리보기
+<div class = "row">
+<div class = "col-md-6">
+```{r echo=FALSE}
+data <- read_csv("../data/dataset.csv")
+kable(head(data)) %>%
+  kable_styling(bootstrap_options = "striped", full_width = FALSE, position="left")
+```
+</div>
