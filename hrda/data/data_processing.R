@@ -1,12 +1,15 @@
 library(tidyverse)
-library(plyr)
 library(dplyr)
+
+
+remove(raw)
 
 # 1. IBM HR Analysis on Kaggle에서 제공하는 IBM 데이터를 활용하여 데이터를 분석합니다.
 raw <- read_csv("data/dataset.csv")
 
 view(raw)
 dim(raw)
+summary(raw)
 
 # 1-1. 종속변수 선정: 근속률을 예측하기 위해 퇴사 여부를 확인할 수 있는 Attrition을 종속변수로 선정. 
 #       기존 데이터의 Y/N 을 0/1 로 변경 = Attrition ( 0 = 'no', 1 = 'yes')
@@ -49,25 +52,91 @@ train_label <- train$ID
 
 # 삭제 변수
 removal_raw <- c("DailyRate", "EmployeeCount", "HourlyRate", "MonthlyRate", "Over18", "StockOptionLevel")
+drop.cols <- removal_raw
 
-# 값 조정 변수
-edit_raw <- c("Department", "DistancFromHome","EducationField", "JobRole", "")
 
+# 데이터 치환
+
+# Departmemt Update
 table(raw$Department)
-c("Audit", "Tax", "CS", "Deal", "Other")
+c("Audit", "Tax", "CS&DA")
+
+raw =
+  raw %>%
+  mutate(Department = case_when(
+    Department == "Research & Development" ~ "Audit",
+    Department == "Sales" ~ "Tax",
+    Department == "Human Resources" ~ "CS&DA"
+  ))
+
+
+# Distance from Home 
 table(raw$DistanceFromHome)
-# 1 ~ 27, 1 ~ 10 : 서울, 11 - 20 : 수도권, 21 - 27 : 지방?
-c("")
-table(raw$Education)
+# 거리: 30분 미만(1~10), 1시간 미만(11~21), 1시간 이상(22~29)
+raw =
+  raw %>%
+  mutate(DistanceFromHome = case_when(
+    DistanceFromHome %in%  1:10  ~ "30분 미만",
+    DistanceFromHome %in%  11:20 ~ "1시간 미만",
+    DistanceFromHome %in%  21:30 ~ " 1시간 이상"
+  ))
+
+
+# EducationField 
 table(raw$EducationField)
-c("인문학", "기술공학", "경제경영학", "자연과학", "기타")
+c("인문학", "자연과학", "마케팅", "경제", "기타", "이공계")
+
+# EducationField 
+raw =
+  raw %>% 
+  mutate(EducationField = case_when(
+    EducationField == "Marketing" ~ "인문학",
+    EducationField == "Life Sciences" ~ "기술공학",
+    EducationField == "Medical" ~ "상경계",
+    EducationField == "Technical Degree" ~ "자연과학",
+    EducationField == "Human Resources" ~ "예체능",
+    EducationField == "Other" ~ "기타"
+  ))
+
+
 table(raw$JobRole)
-c("감사직","컨설팅직","투자자문직", "기술컨설팅직", "세무직", "사무직", "연구직")
-# 추가 변수
-add_raw <- c("BirthYear", "Functions", "OverTimeHours", "MonthlyLeaves")
+c("감사직","컨설팅직","투자자문직", "기술컨설팅직", "세무직", "사무직", "연구직", "기술직", "영업직")
 
-# CPA 여부
-# 정규/계약직
+raw=
+  raw %>% 
+  mutate(JobRole = case_when(
+    JobRole == "Sales Executive" ~ "감사직",
+    JobRole == "Research Scientist" ~ "컨설팅직",
+    JobRole == "Healthcare Representative" ~ "투자자문직",
+    JobRole == "Laboratory Technician" ~ "기술컨설팅직",
+    JobRole == "Manufacturing Director" ~ "세무직",
+    JobRole == "Human Resources" ~ "사무직",
+    JobRole == "Manager" ~ "연구직",
+    JobRole == "Research Director" ~ "기술직",
+    JobRole == "Sales Representative" ~ "영업직"
+  ))
 
 
+
+ # 추가 변수
+ add_raw <- c("BirthYear", "Functions", "OverTimeHours", "MonthlyLeaves")
+ 
+ 
+ # BirthYear
+  raw =
+  raw %>% 
+     mutate(BirthYear = 2020 - Age
+     )
+
+ # MonthlyLeaves
+  raw = 
+    raw %>% 
+    mutate(MonthlyLeaves = sample(0:3, n(), replace = TRUE))  
+
+
+  # OverTimeHours
+  raw = raw %>% 
+    #filter(OverTime == "Yes") %>%
+    mutate(OverTimeHours = ifelse(OverTime == "Yes", sample(1:52, n(), replace = TRUE), 0))
+  
 
