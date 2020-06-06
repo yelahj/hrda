@@ -51,9 +51,10 @@ train_label <- train$ID
 
 
 # 삭제 변수
-removal_raw <- c("DailyRate", "EmployeeCount", "HourlyRate", "MonthlyRate", "Over18", "StockOptionLevel")
-drop.cols <- removal_raw
-
+drop.cols <- c("DailyRate", "EmployeeCount", "HourlyRate", "MonthlyRate", "Over18", "StockOptionLevel")
+raw = 
+raw %>%
+  select (-drop.cols)
 
 # 데이터 치환
 
@@ -139,4 +140,4 @@ raw=
     #filter(OverTime == "Yes") %>%
     mutate(OverTimeHours = ifelse(OverTime == "Yes", sample(1:52, n(), replace = TRUE), 0))
   
-
+data = raw
