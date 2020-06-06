@@ -35,7 +35,10 @@ ui <- dashboardPage(skin="blue",
         ),
         tabItems(
             tabItem(tabName = "dashboard",
-                    h2("Dashboard tab content")
+                    fluidRow(
+                      column(6, plotOutput("genderPlot")),
+                      column(6, plotOutput("dpPlot"))
+                    )
             ),
             
             tabItem(tabName = "widgets",
