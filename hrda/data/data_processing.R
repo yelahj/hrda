@@ -1,4 +1,7 @@
+
+
 library(tidyverse)
+
 library(dplyr)
 
 
@@ -52,7 +55,7 @@ train_label <- train$ID
 
 # 삭제 변수
 removal_raw <- c("DailyRate", "EmployeeCount", "HourlyRate", "MonthlyRate", "Over18", "StockOptionLevel")
-drop.cols <- removal_raw
+ drop.cols <- removal_raw
 
 
 # 데이터 치환
@@ -66,7 +69,7 @@ raw =
   mutate(Department = case_when(
     Department == "Research & Development" ~ "Audit",
     Department == "Sales" ~ "Tax",
-    Department == "Human Resources" ~ "CS&DA"
+    Department == "Human Resources" ~ "CSDA"
   ))
 
 
@@ -127,8 +130,9 @@ raw=
   raw %>% 
      mutate(BirthYear = 2020 - Age
      )
-
- # MonthlyLeaves
+  
+ 
+  # MonthlyLeaves
   raw = 
     raw %>% 
     mutate(MonthlyLeaves = sample(0:3, n(), replace = TRUE))  
@@ -140,3 +144,21 @@ raw=
     mutate(OverTimeHours = ifelse(OverTime == "Yes", sample(1:52, n(), replace = TRUE), 0))
   
 
+data = raw
+
+
+  # 그래프-부서별 인원수
+
+install.packages("ggplot2")
+library(ggplot2)
+library(Mass)
+
+count.gender <- ggplot(data = raw, aes(x = Gender)) + geom_bar(fill="#F8766D") +
+  labs(title = "EmployeeCount by Gender")
+
+count.dp <- ggplot(data = raw, aes(x = Department, y = EmployeeCount)) + geom_col(colour="#F8766D") +
+  labs(title = "EmployeeCount by Department")
+
+
+
+    
