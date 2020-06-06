@@ -23,7 +23,6 @@ shinyServer(function(input, output) {
     # Datatable
     output$table <- DT::renderDataTable(DT::datatable({
         data <- data #read_csv("data/dataset.csv") 
-        
         if (input$att != "All") {
             data <- data[data$Attrition == input$att,]
         }

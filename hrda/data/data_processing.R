@@ -54,9 +54,10 @@ train_label <- train$ID
 
 
 # 삭제 변수
-removal_raw <- c("DailyRate", "EmployeeCount", "HourlyRate", "MonthlyRate", "Over18", "StockOptionLevel")
- drop.cols <- removal_raw
-
+drop.cols <- c("DailyRate", "EmployeeCount", "HourlyRate", "MonthlyRate", "Over18", "StockOptionLevel")
+raw = 
+raw %>%
+  select (-drop.cols)
 
 # 데이터 치환
 
@@ -144,9 +145,6 @@ raw=
     mutate(OverTimeHours = ifelse(OverTime == "Yes", sample(1:52, n(), replace = TRUE), 0))
   
 
-data = raw
-
-
   # 그래프-부서별 인원수
 
 install.packages("ggplot2")
@@ -161,4 +159,4 @@ count.dp <- ggplot(data = raw, aes(x = Department, y = EmployeeCount)) + geom_co
 
 
 
-    
+data = raw
