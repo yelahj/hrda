@@ -1,8 +1,12 @@
 # Visualizatoin 1
 
+library(ggplot)
 library(reshape2)
 library(ggplot2)
 library(extrafont)
+library(GGally)
+
+
 font_import()
 
 theme_set(theme_grey(base_family='NanumGothic'))
@@ -12,7 +16,12 @@ theme.ax <- element_text(family="NanumGothic", face="bold", size=10, angle=00, h
 theme.leti<-element_text(family="NanumGothic", face="bold") #범례 제목 (legend) 스타일 변경, 범례가 있을 경우에만 쓰세요
 theme.lete<-element_text(family="NanumGothic") #범례 항목 (legend) 스타일 변경, 범례가 있을 경우에만 쓰세요
 
+# numeric 변수들의 corr
 ggcorr(data)
+
+option(digit=2)
+cor(data)
+
 
 # 1. 인구통계학적 특성에 따른 현황 (성별, 교육 등 개인적인 요인들) 
 
