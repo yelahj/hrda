@@ -1,0 +1,54 @@
+# 퇴사 영향 변수
+# 1. 인구통계학적 특성에 따른 현황 (성별, 교육 등 개인적인 요인들) 
+  Age, 
+  MaritalStatus, 
+  BirthYear, 
+  Gender, 
+  
+  NumCompaniesWorked
+  TotalWorkingYears
+
+
+  그래프 1. 각 성별 연령대 분포도 (평균)
+  그래프 2. 학력별 퇴사율 
+
+# 2. 소속 집단에 따른 현황 (사내 환경적 요인)
+
+  JobInvolvement
+  JobLevel
+  JobRole
+  MonthlyIncome
+  OverTime
+  PercentSalaryHike
+  StandardHours
+  YearsAtCompany
+  YearsInCurrentRole
+  YearsSinceLastPromotion
+  TrainingTimesLastYear
+  YearsWithCurrManager
+  MonthlyLeaves
+  OverTimeHours
+
+  PerformanceRating
+
+  그래프1 부서별 연봉? 연봉과 퇴사 정보 비교
+  그래프2 overtime 현황별 퇴사 
+
+
+# 3. 만족도에 따른 현황 - 사내 환경적 (주관)
+  JobSatisfaction
+  RelationshipSatisfaction
+  EnvironmentSatisfaction
+
+ 그래프 1. role 별 만족도 (업무, 환경)
+ 그래프 2. 만족도에 따른 퇴사율
+ 
+ 
+# 4 라이프 스타일에 따른 현황
+  WorkLifeBalance
+
+그래프 1. 부서별 워라밸
+ - 부서별 overtime
+ - 부서별 refresh 발생율
+ - 부서별 refresh 소진율
+ 

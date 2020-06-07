@@ -2,6 +2,8 @@
 # EDA 
 library(tidyverse)
 library(ggplot2)
+library(grid)
+library(gridExtra)
 
 # 한글깨짐 (http://blog.daum.net/pingpu/13718306)
 install.packages("extrafont")
@@ -69,12 +71,24 @@ ggplot(data,aes(DistanceFromHome,fill=Attrition))+geom_bar()
 ## grid.arrange(travelPlot,depPlot,distPlot, nrow=3)
 
 
+data %>% 
+  group_by(data$Department,data$Attrition) %>% 
+  summarise(count=n()) %>% 
+  mutate(grp_pct=count/sum(count)*100)
+
+data %>%
+  ggplot(aes(x=data$Department)) + 
+  geom_bar(aes(fill=data$Attrition),position = position_dodge())
+
+ggplot(aes(x=data$OverTime))+geom_bar(aes(fill=data$Attrition),position = position_dodge(),color="grey")+facet_grid(data$Gender~.)
+
 library(corrplot)
 library(psych)
 
 attach(data)
 
 table(data$Attrition)
+table(data$Department)
 
 xtabs(~JobSatisfaction+PerformanceRating)
 xtabs(~JobInvolvement+EnvironmentSatisfaction)
@@ -93,11 +107,11 @@ chisq.test(YearsSinceLastPromotion, Attrition)
 t.test(PerformanceRating~Attrition,data=data)
 
 
-frame <-data[,c("Age","DailyRate","DistanceFromHome","Education","EmployeeCount",
-                "EnvironmentSatisfaction","HourlyRate","JobInvolvement","JobLevel",
-                "JobSatisfaction","MonthlyIncome","MonthlyRate","NumCompaniesWorked",
+frame <-data[,c("Age","DistanceFromHome","Education",
+                "EnvironmentSatisfaction","JobInvolvement","JobLevel",
+                "JobSatisfaction","MonthlyIncome","NumCompaniesWorked",
                 "PercentSalaryHike","PerformanceRating","RelationshipSatisfaction",
-                "StandardHours","StockOptionLevel","TotalWorkingYears",
+                "StandardHours","TotalWorkingYears",
                 "TrainingTimesLastYear","WorkLifeBalance","YearsAtCompany",
                 "YearsInCurrentRole","YearsSinceLastPromotion","YearsWithCurrManager")]
 round(cor(frame),2)
@@ -118,3 +132,69 @@ v_ds <- v_data %>%
                                  v_data$Attrition)$p.value), -one_of("Attrition"))
 
 v_ds
+
+
+# 가설 1. 가장 퇴사를 많이 한 연령대는 ___이고, __혼일 수록 높다. 
+# 가설 2. 특정 부서가 _____ 퇴사율이 높다. 원인
+# 부서별 만족도, workandbalance, 
+
+
+head(data)
+
+# Feature Selection
+
+# Feature Engineering
+
+
+
+
+# Train / Test 데이터로 분류 [*] Attritiond을 기준으로 비율을 정해야 한다.
+prop.table(table(raw$Attrition)) 
+## 75%로 샘플 사이즈 변경하기 smp_size는 75% 로 실행
+smp_size <- floor(0.75 * nrow(raw))
+set.seed(123)
+
+## train_ind <- sample 인덱스
+train_ind <- sample(seq_len(nrow(raw)), size = smp_size)
+
+### Train & Test data 
+train <- raw[train_ind, ]
+test <- raw[-train_ind, ]
+
+test_label <- test$ID
+train_label <- train$ID
+
+# 인덱스 drop..
+# test$Id <- NULL
+# train$Id <- NULL
+
+# 테스트 위해 test데이터의 Attrition 값 drop 
+# test$Attrition <- NA
+
+
+library(xgboost)
+set.seed(111)
+
+xgb_mod1= xgb.train(params = param,
+                   data=train,
+                   watchlist = watch,
+                   verbose = 1)
+
+install.packages("RCurl")
+install.packages("Rcpp")
+install.packages("xml2")
+install.packages("devtools")
+install.packages("Rtools")
+devtools::install_github('dmlc/xgboost',subdir='R-package')
+
+attach(data)
+rf_mod1=train(Attrition ~.,
+              data=train,
+              method="rf",
+              metric="ROC",
+              trControl=trcontrolobj,
+              verbose=T)
+
+
+
+
