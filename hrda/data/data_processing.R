@@ -2,7 +2,7 @@ library(tidyverse)
 library(dplyr)
 
 # 1. IBM HR Analysis on Kaggle에서 제공하는 IBM 데이터를 활용하여 데이터를 분석합니다.
-raw <- read_csv("hrda/data/dataset.csv")
+raw <- read_csv("data/dataset.csv")
 
 view(raw)
 dim(raw)
@@ -82,6 +82,25 @@ data =
   mutate(MonthlyLeaves = sample(0:3, n(), replace = TRUE))  %>%
   mutate(OverTimeHours = ifelse(OverTime == "Yes", sample(1:52, n(), replace = TRUE), 0))
 
+data <- raw
 
 
+#pie 그래프
+install.packages("ggplot2")
+library(ggplot2)
 
+
+round.Att <- table(raw$Attrition)
+pie(round.Att)
+label <- paste(names(round.Att), "\n", round.Att)
+label
+pie(round.Att, labels = label)
+
+label <- paste(names(round.Att), "\n", round.Att/sum(round.Att)*100)
+label
+pie(round.Att, labels=label)
+
+pct <- round(round.Att/sum(round.Att)*100,2)
+label <- paste(names(round.Att), "\n", pct, "%")
+colors = c("rosybrown2", "#F8766D")
+pie(round.Att, col = colors, labels=label,  main = "Employee Status")
