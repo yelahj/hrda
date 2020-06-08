@@ -7,7 +7,7 @@ library(extrafont)
 library(GGally)
 
 
-font_import()
+font_import(pattern = "D2")
 
 theme_set(theme_grey(base_family='NanumGothic'))
 

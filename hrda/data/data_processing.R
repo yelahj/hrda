@@ -2,7 +2,7 @@ library(tidyverse)
 library(dplyr)
 
 # 1. IBM HR Analysis on Kaggle에서 제공하는 IBM 데이터를 활용하여 데이터를 분석합니다.
-raw <- read_csv("data/dataset.csv")
+raw <- read_csv("hrda/data/dataset.csv")
 
 view(raw)
 dim(raw)

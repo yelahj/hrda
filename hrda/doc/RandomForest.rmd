@@ -1,0 +1,146 @@
+---
+title: "RandomForest"
+author: ""
+date: '2020 6 6 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Tidymodel 사용 : 랜덤포레스트 (회귀)
+
+
+-
+
+
+# install.packages('randomForest')
+
+```
+
+library(tidyverse)
+library(tidymodels)
+library(randomForest)
+library(yardstick)
+
+
+data %>%
+  initial_split(prop=0.7) -> data_split
+
+data_split
+
+data_split %>%
+  training()
+
+data_split %>%
+  testing()
+
+data_split %>% training() %>%
+  recipe(Attrition~
+         + Age
+         + MaritalStatus 
+         + Gender
+         + NumCompaniesWorked
+         + TotalWorkingYears
+         + JobInvolvement
+         + JobLevel
+         + JobRole
+         + MonthlyIncome
+         + OverTime
+         + PercentSalaryHike
+         + StandardHours
+         + YearsAtCompany
+         + YearsInCurrentRole
+         + YearsSinceLastPromotion
+         + TrainingTimesLastYear
+         + YearsWithCurrManager
+         + PerformanceRating
+         + JobSatisfaction
+         + RelationshipSatisfaction
+         + EnvironmentSatisfaction)
+
+# 결측치 없음..?
+sum(is.na(data))
+
+data_split %>% training() %>%
+  recipe(Attrition~
+         + Age
+         + NumCompaniesWorked
+         + TotalWorkingYears
+         + MonthlyIncome
+         + PercentSalaryHike
+         + YearsAtCompany
+         + YearsInCurrentRole
+         + PerformanceRating
+         + JobSatisfaction
+         + RelationshipSatisfaction
+         + EnvironmentSatisfaction) %>%
+  step_corr(all_predictors()) %>% # 상관관계가 지나치게 큰 변수를 제거
+  step_center(all_predictors(), -all_outcomes()) %>% # 평균을 0으로 하는 척도  
+  step_scale(all_predictors(), -all_outcomes()) %>%
+  prep() -> data_recipe
+
+select_if(data, is.numeric)
+
+data_recipe
+
+data_recipe %>%
+  bake(data_split %>% testing()) -> data_testing
+
+data_testing
+
+data_recipe %>%
+  juice() -> data_training
+
+data_training
+
+
+
+#---------------------랜덤포레스트 : 회귀 
+# mode는 회귀와 분류가 있따. 
+
+rand_forest(trees=100, mode='regression') %>%
+  set_engine('randomForest') %>%
+  fit(Attrition~
+      + Age
+      + NumCompaniesWorked
+      + TotalWorkingYears
+      + MonthlyIncome
+      + PercentSalaryHike
+      + YearsAtCompany
+      + YearsInCurrentRole
+      + PerformanceRating
+      + JobSatisfaction
+      + RelationshipSatisfaction
+      + EnvironmentSatisfaction
+    , data=data_training) -> data_rg
+
+data_rg
+
+result = 
+data_rg %>% 
+  predict(data_testing) %>%
+  bind_cols(data_testing)
+
+
+# bind해서 test한 데이터와 train한 데이터 비교
+data_rg %>%
+  predict(data_testing) %>%
+  bind_cols(data_testing)
+
+
+# 성능측정
+
+data_rg %>%
+  predict(data_testing) %>%
+  bind_cols(data_testing) %>%
+  metrics(truth=Attrition, estimate=.pred_res)
+
+
+```
+
+
+ * 전처리데이터 조정 필요
+ * 분류 시도?
+ 

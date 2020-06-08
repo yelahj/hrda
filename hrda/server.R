@@ -4,22 +4,52 @@ library(tidyverse)
 library(ggplot2)
 library(DT)
 library(corrplot)
+library(extrafont)
+library(GGally)
 
 shinyServer(function(input, output) {
     # Filter data based on selections
     # Plot
+
+    
+    # valueBox
+    output$employee <- renderValueBox({
+        valueBox(length(which(data$Attrition == "No")),"재직자수", icon = icon("credit-card"),color = "blue")
+    })
+    output$retirees <- renderValueBox({
+        valueBox(length(which(data$Attrition == "Yes")),"퇴직자수", icon = icon("credit-card"),color = "blue")
+    })
+    output$refresh <- renderValueBox({
+        valueBox("80%","휴가사용률", icon = icon("credit-card"),color = "blue")
+    })
+    output$retention <- renderValueBox({
+        valueBox("60%","근속률", icon = icon("credit-card"),color = "blue")
+    })
+    
+    # Plot
+    output$round.Att <- renderPlot({
+        
+        pie(table(raw$Attrition), col = (colors = c("rosybrown2", "#F8766D")), radius = 1.25, labels = paste(names(round.Att), "\n", pct, "%"), cex=1.5, main = "Employee Status")
+    })
+    
+    
     output$genderPlot <- renderPlot({
-        data <- data #read_csv("data/dataset.csv") 
-        
-        ggplot(data = raw, aes(x = Gender)) + geom_bar(fill="#F8766D") +
+        ggplot(data = data, aes(x = Gender)) + geom_bar(fill="#F8766D") +
             labs(title = "EmployeeCount by Gender")
-        })
+    })
+    
     output$dpPlot <- renderPlot({
-        data <- data #read_csv("data/dataset.csv") 
         
-        ggplot(data = raw, aes(x = Department, y = EmployeeCount)) + geom_col(colour="#F8766D") +
+        ggplot(data = data, aes(x = Department, y = EmployeeCount)) + geom_col(colour="#F8766D") +
             labs(title = "EmployeeCount by Department")
     })
+    
+    output$ageplot <- renderPlot({
+        
+        ggplot(data = data, aes(x = Age)) + geom_bar(fill="#F8766D") +
+            labs(title = "EmployeeCount by Age")
+    })    
+    
     output$gg1_1 <- renderPlot({
         da_yes <- 
             data %>%
@@ -70,10 +100,8 @@ shinyServer(function(input, output) {
             theme_minimal() + theme(axis.text.x = element_text(angle = 90), plot.title=element_text(hjust=0.8)) + 
             scale_fill_manual(values=c("grey", "tomato")) + 
             labs(y="평균임금", x="부서", title="퇴사/재직자 별 부서별 임금비교") + 
-            geom_text(aes(x=Department, y=0.01, label= paste0("$ ", round(avg.inc,2))),
-                      hjust=-0.5, vjust=0, size=3, 
-                      colour="black", fontface="bold",
-                      angle=90) + 
+            geom_text(aes(x=Department, label= round(avg.inc,2)),
+                      hjust=0.5, vjust=1, size=4) + 
             theme_minimal() + 
             theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
     })     
