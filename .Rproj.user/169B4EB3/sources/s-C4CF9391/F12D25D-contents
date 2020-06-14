@@ -1,0 +1,64 @@
+
+# Logistic
+
+
+head(data)
+
+# Feature Selection
+
+
+# Feature Engineering
+
+
+
+
+# Train / Test 데이터로 분류 [*] Attritiond을 기준으로 비율을 정해야 한다.
+prop.table(table(raw$Attrition)) 
+## 75%로 샘플 사이즈 변경하기 smp_size는 75% 로 실행
+smp_size <- floor(0.75 * nrow(raw))
+set.seed(123)
+
+## train_ind <- sample 인덱스
+train_ind <- sample(seq_len(nrow(raw)), size = smp_size)
+
+### Train & Test data 
+train <- raw[train_ind, ]
+test <- raw[-train_ind, ]
+
+test_label <- test$ID
+train_label <- train$ID
+
+# 인덱스 drop..
+# test$Id <- NULL
+# train$Id <- NULL
+
+# 테스트 위해 test데이터의 Attrition 값 drop 
+# test$Attrition <- NA
+
+
+library(xgboost)
+set.seed(111)
+
+xgb_mod1= xgb.train(params = param,
+                    data=train,
+                    watchlist = watch,
+                    verbose = 1)
+
+install.packages("RCurl")
+install.packages("Rcpp")
+install.packages("xml2")
+install.packages("devtools")
+install.packages("Rtools")
+devtools::install_github('dmlc/xgboost',subdir='R-package')
+
+attach(data)
+rf_mod1=train(Attrition ~.,
+              data=train,
+              method="rf",
+              metric="ROC",
+              trControl=trcontrolobj,
+              verbose=T)
+
+
+
+

@@ -1,0 +1,512 @@
+labs(x="Age", y="Count") +
+#  scale_fill_gradient("Count", low="skyblue", high="dark blue")
+scale_color_steps()
+ggplot(data=data, aes(data$Age)) +
+geom_histogram(breaks=seq(20, 50, by=2),
+aes(fill=..count..))+
+labs(x="연령대", y="퇴사자") +
+scale_fill_gradient("Count", low="skyblue", high="dark blue")
+scale_color_steps()
+ggplot(data=data, aes(data$Age)) +
+geom_histogram(breaks=seq(20, 50, by=2),
+aes(fill=..count..))+
+labs(x="연령대", y="퇴사자") +
+scale_fill_gradient("Count", low="skyblue", high="navy")
+scale_color_steps()
+ggplot(data=data, aes(data$Age)) +
+geom_histogram(breaks=seq(20, 50, by=2),
+aes(fill=..count..))+
+labs(x="연령대", y="퇴사자") +
+scale_fill_gradient("Count", low="skyblue", high="blue")
+scale_color_steps()
+ggplot(data=data, aes(data$Age)) +
+geom_histogram(breaks=seq(20, 50, by=2),
+aes(fill=..count..))+
+labs(x="연령대", y="퇴사자") +
+scale_fill_gradient("Count", low="lightblue", high="blue")
+scale_color_steps()
+ggplot(data=data, aes(data$Age)) +
+geom_histogram(breaks=seq(20, 50, by=2),
+aes(fill=..count..))+
+labs(x="연령대", y="퇴사자") +
+scale_fill_gradient("Count", low="lightblue", high="skyblue")
+scale_color_steps()
+ggplot(data=data, aes(data$Age)) +
+geom_histogram(breaks=seq(20, 50, by=2),
+aes(fill=..count..))+
+labs(x="연령대", y="퇴사자") +
+scale_fill_gradient("Count", low="lightblue", high="royalblue")
+scale_color_steps()
+ggplot(data=data, aes(data$Age)) +
+geom_histogram(breaks=seq(20, 50, by=2),
+aes(fill=..count..))+
+labs(x="연령대", y="퇴사자") +
+scale_fill_gradient("Count", low="lightblue", high="royalblue")
+scale_color_steps() +
+theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
+data %>%
+group_by(Attrition) %>%
+tally() %>%
+ggplot(aes(x = Attrition, y = n,fill=Attrition)) +
+geom_bar(stat = "identity") +
+theme_minimal()+
+labs(x="퇴사여부", y="퇴사자 수")+
+geom_text(aes(label = n), vjust = -0.5, position = position_dodge(0.9)) +
+theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
+ggplot(data=data, aes(data$Age)) +
+geom_histogram(breaks=seq(20, 50, by=2),
+aes(fill=..count..))+
+labs(x="연령대", y="퇴사자") +
+scale_fill_gradient("Count", low="lightblue", high="royalblue")
+scale_color_steps() +
+theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
+ggplot(data=data, aes(data$Age)) +
+geom_histogram(breaks=seq(20, 50, by=2),
+aes(fill=..count..))+
+labs(x="연령대", y="퇴사자") +
+scale_fill_gradient("Count", low="lightblue", high="royalblue") +
+theme(axis.title = theme.ax, plot.title = theme.ti) + # 한글 폰트
+scale_color_steps()
+color()
+frame <-data[,c("Age","DailyRate","DistanceFromHome","Education","EmployeeCount",
+"EnvironmentSatisfaction","HourlyRate","JobInvolvement","JobLevel",
+"JobSatisfaction","MonthlyIncome","MonthlyRate","NumCompaniesWorked",
+"PercentSalaryHike","PerformanceRating","RelationshipSatisfaction",
+"StandardHours","StockOptionLevel","TotalWorkingYears",
+"TrainingTimesLastYear","WorkLifeBalance","YearsAtCompany",
+"YearsInCurrentRole","YearsSinceLastPromotion","YearsWithCurrManager")]
+round(cor(frame),2)
+library(corrplot)
+corrplot(cor(frame))
+ggplot(data,aes(YearsSinceLastPromotion,fill=Attrition))+geom_bar()
+v_data <- data[c("Attrition","JobSatisfaction", "MonthlyIncome", "YearsAtCompany", "NumCompaniesWorked","JobRole", "PerformanceRating","RelationshipSatisfaction","YearsSinceLastPromotion","Education")]
+v_ds <- v_data %>%
+summarise_each(funs(chisq.test(.,
+v_data$Attrition)$p.value), -one_of("Attrition"))
+v_ds
+getwd()
+getwd()
+shiny::runApp('hrda')
+library(shiny)
+library(shinythemes)
+library(tidyverse)
+library(ggplot2)
+library(DT)
+getwd()
+setwd("/Users/yelahj/Project/hrda/hrda")
+ls
+data <- read_csv("data/dataset.csv")
+raw <- read_csv("data/dataset.csv")
+view(raw)
+dim(raw)
+summary(raw)
+raw$Attrition <- as.integer(as.character(raw$Attrition)=="Yes")
+raw$Attrition <-as.factor(raw$Attrition)
+raw$Gender <- as.integer(as.character(raw$Gender)=="Female")
+raw$Gender <-as.factor(raw$Gender)
+prop.table(table(raw$Attrition))
+raw %>%
+select (-removal_raw)
+removal_raw <- c("DailyRate", "EmployeeCount", "HourlyRate", "MonthlyRate", "Over18", "StockOptionLevel")
+raw %>%
+select (-removal_raw)
+View(raw)
+select (-removal_raw)
+drop.cols <- c("DailyRate", "EmployeeCount", "HourlyRate", "MonthlyRate", "Over18", "StockOptionLevel")
+select (-drop.cols)
+raw %>%
+select (-drop.cols)
+raw =
+raw %>%
+select (-drop.cols)
+table(raw$Department)
+raw =
+raw %>%
+mutate(Department = case_when(
+Department == "Research & Development" ~ "Audit",
+Department == "Sales" ~ "Tax",
+Department == "Human Resources" ~ "CS&DA"
+))
+raw =
+raw %>%
+mutate(DistanceFromHome = case_when(
+DistanceFromHome %in%  1:10  ~ "30분 미만",
+DistanceFromHome %in%  11:20 ~ "1시간 미만",
+DistanceFromHome %in%  21:30 ~ " 1시간 이상"
+))
+raw =
+raw %>%
+mutate(EducationField = case_when(
+EducationField == "Marketing" ~ "인문학",
+EducationField == "Life Sciences" ~ "기술공학",
+EducationField == "Medical" ~ "상경계",
+EducationField == "Technical Degree" ~ "자연과학",
+EducationField == "Human Resources" ~ "예체능",
+EducationField == "Other" ~ "기타"
+))
+raw=
+raw %>%
+mutate(JobRole = case_when(
+JobRole == "Sales Executive" ~ "감사직",
+JobRole == "Research Scientist" ~ "컨설팅직",
+JobRole == "Healthcare Representative" ~ "투자자문직",
+JobRole == "Laboratory Technician" ~ "기술컨설팅직",
+JobRole == "Manufacturing Director" ~ "세무직",
+JobRole == "Human Resources" ~ "사무직",
+JobRole == "Manager" ~ "연구직",
+JobRole == "Research Director" ~ "기술직",
+JobRole == "Sales Representative" ~ "영업직"
+))
+raw =
+raw %>%
+mutate(BirthYear = 2020 - Age
+)
+raw =
+raw %>%
+mutate(MonthlyLeaves = sample(0:3, n(), replace = TRUE))
+raw = raw %>%
+#filter(OverTime == "Yes") %>%
+mutate(OverTimeHours = ifelse(OverTime == "Yes", sample(1:52, n(), replace = TRUE), 0))
+data = raw
+runApp()
+data %>%
+group_by(Attrition) %>%
+tally() %>%
+ggplot(aes(x = Attrition, y = n,fill=Attrition)) +
+geom_bar(stat = "identity") +
+theme_minimal()+
+labs(x="퇴사여부", y="퇴사자 수")+
+geom_text(aes(label = n), vjust = -0.5, position = position_dodge(0.9)) +
+theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
+prop.table(table(data$Attrition))
+data %>%
+group_by(Attrition) %>%
+tally() %>%
+ggplot(aes(x = Attrition, y = n,fill=Attrition)) +
+geom_bar(stat = "identity") +
+theme_minimal()+
+labs(x="퇴사여부", y="퇴사자 수")+
+geom_text(aes(label = n), vjust = -0.5, position = position_dodge(0.9)) +
+theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
+library(tidyverse)
+library(ggplot2)
+install.packages("extrafont")
+font_import()
+theme_set(theme_grey(base_family='NanumGothic'))
+theme.ti <- element_text(family="NanumGothic", face="bold", size=12) #그래프 제목 스타일 변경
+theme.ax <- element_text(family="NanumGothic", face="bold", size=10, angle=00, hjust=0.54, vjust=0.5) #그래프 축 이름 스타일 변경
+theme.leti<-element_text(family="NanumGothic", face="bold") #범례 제목 (legend) 스타일 변경, 범례가 있을 경우에만 쓰세요
+theme.lete<-element_text(family="NanumGothic") #범례 항목 (legend) 스타일 변경, 범례가 있을 경우에만 쓰세요
+data %>%
+group_by(Attrition) %>%
+tally() %>%
+ggplot(aes(x = Attrition, y = n,fill=Attrition)) +
+geom_bar(stat = "identity") +
+theme_minimal()+
+labs(x="퇴사여부", y="퇴사자 수")+
+geom_text(aes(label = n), vjust = -0.5, position = position_dodge(0.9)) +
+theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
+ggplot(data=data, aes(data$Age)) +
+geom_histogram(breaks=seq(20, 50, by=2),
+aes(fill=..count..))+
+labs(x="연령대", y="퇴사자") +
+scale_fill_gradient("Count", low="skyblue", high="navy")
+scale_color_steps()
+ggplot(data,aes(BusinessTravel,fill=Attrition))+geom_bar()
+ggplot(data,aes(Department,fill = Attrition))+geom_bar()
+ggplot(data,aes(DistanceFromHome,fill=Attrition))+geom_bar()
+ggplot(data,aes(BusinessTravel,fill=Attrition))+geom_bar()
+ggplot(data,aes(Department,fill = Attrition))+geom_bar()
+ggplot(data,aes(DistanceFromHome,fill=Attrition))+geom_bar()
+v_ds <- v_data %>%
+summarise_each(funs(chisq.test(.,
+v_data$Attrition)$p.value), -one_of("Attrition"))
+v_data <- data[c("Attrition","JobSatisfaction", "MonthlyIncome", "YearsAtCompany", "NumCompaniesWorked","JobRole", "PerformanceRating","RelationshipSatisfaction","YearsSinceLastPromotion","Education")]
+v_ds <- v_data %>%
+summarise_each(funs(chisq.test(.,
+v_data$Attrition)$p.value), -one_of("Attrition"))
+v_ds
+ggplot(ds,aes(EmployeeNumber,fill=Attrition))+geom_bar()
+i<-ggplot(ds,aes(EmployeeNumber,fill=Attrition))+geom_bar()
+j<-ggplot(ds,aes(EnvironmentSatisfaction,fill=Attrition))+geom_bar()
+k<-ggplot(ds,aes(Gender,fill=Attrition))+geom_bar()
+l<-ggplot(ds,aes(HourlyRate,fill=Attrition))+geom_bar()
+grid.arrange(i,j,k,l,ncol=2)
+i<-ggplot(data,aes(EmployeeNumber,fill=Attrition))+geom_bar()
+j<-ggplot(data,aes(EnvironmentSatisfaction,fill=Attrition))+geom_bar()
+k<-ggplot(data,aes(Gender,fill=Attrition))+geom_bar()
+l<-ggplot(data,aes(HourlyRate,fill=Attrition))+geom_bar()
+grid.arrange(i,j,k,l,ncol=2)
+grid.arrange(i,j,k,l,ncol=2)
+library(grid)
+library(gridExtra)
+i<-ggplot(data,aes(EmployeeNumber,fill=Attrition))+geom_bar()
+j<-ggplot(data,aes(EnvironmentSatisfaction,fill=Attrition))+geom_bar()
+k<-ggplot(data,aes(Gender,fill=Attrition))+geom_bar()
+l<-ggplot(data,aes(HourlyRate,fill=Attrition))+geom_bar()
+grid.arrange(i,j,k,l,ncol=2)
+i<-ggplot(data,aes(EmployeeNumber,fill=Attrition))+geom_bar()
+j<-ggplot(data,aes(EnvironmentSatisfaction,fill=Attrition))+geom_bar()
+k<-ggplot(data,aes(Gender,fill=Attrition))+geom_bar()
+l<-ggplot(data,aes(HourlyRate,fill=Attrition))+geom_bar()
+grid.arrange(i,j,k,l,ncol=2)
+i<-ggplot(data,aes(EmployeeNumber,fill=Attrition))+geom_bar()
+j<-ggplot(data,aes(EnvironmentSatisfaction,fill=Attrition))+geom_bar()
+k<-ggplot(data,aes(Gender,fill=Attrition))+geom_bar()
+grid.arrange(i,j,k,ncol=2)
+corrplot(cor(frame))
+library(corrplot)
+corrplot(cor(frame))
+library(corrplot)
+corrplot(cor(frame))
+frame <-data[,c("Age","DistanceFromHome","Education",
+"EnvironmentSatisfaction","JobInvolvement","JobLevel",
+"JobSatisfaction","MonthlyIncome","NumCompaniesWorked",
+"PercentSalaryHike","PerformanceRating","RelationshipSatisfaction",
+"StandardHours","TotalWorkingYears",
+"TrainingTimesLastYear","WorkLifeBalance","YearsAtCompany",
+"YearsInCurrentRole","YearsSinceLastPromotion","YearsWithCurrManager")]
+round(cor(frame),2)
+corrplot(cor(frame))
+frame <-data[,c("Age","DistanceFromHome","Education",
+"EnvironmentSatisfaction","JobInvolvement","JobLevel",
+"JobSatisfaction","MonthlyIncome","NumCompaniesWorked",
+"PercentSalaryHike","PerformanceRating","RelationshipSatisfaction",
+"StandardHours","TotalWorkingYears",
+"TrainingTimesLastYear","WorkLifeBalance","YearsAtCompany",
+"YearsInCurrentRole","YearsSinceLastPromotion","YearsWithCurrManager")]
+round(cor(frame),2)
+frame <-data[,c("Age","DistanceFromHome","Education",
+"EnvironmentSatisfaction","JobInvolvement","JobLevel",
+"JobSatisfaction","MonthlyIncome","NumCompaniesWorked",
+"PercentSalaryHike","PerformanceRating","RelationshipSatisfaction",
+"StandardHours","TotalWorkingYears",
+"TrainingTimesLastYear","WorkLifeBalance","YearsAtCompany",
+"YearsInCurrentRole","YearsSinceLastPromotion","YearsWithCurrManager")]
+round(cor(frame),2)
+chisq.test(Age, Attrition)
+library(corrplot)
+library(psych)
+attach(data)
+chisq.test(Age, Attrition)
+xtabs(~JobSatisfaction+PerformanceRatichisq.test(Age, Attrition)
+View(data)
+View(data)
+dim(data)
+summary(data)
+table(data)
+head(data)
+head(data)
+install.packages("randomForest")
+library(randomForest)
+result = randomForest(Species ~., importance=TRUE, data=iris)
+importance(result)
+result = randomForest(iris[ , 1:4], iris[ , 5])
+result = randomForest(Species ~., importance=TRUE, data=iris)
+importance(result)
+result = randomForest(iris[ , 1:4], iris[ , 5])
+result
+result = randomForest(Species ~., importance=TRUE, data=iris)
+importance(result)
+varImpPlot(result)
+smp_size <- floor(0.75 * nrow(raw))
+set.seed(123)
+train_ind <- sample(seq_len(nrow(raw)), size = smp_size)
+### Train & Test data
+train <- raw[train_ind, ]
+test <- raw[-train_ind, ]
+rf =randomForest::randomForest(Attrition~., data = train)
+pred = predict(rf, test, type = "response")
+library(randomForest)
+rf =randomForest::randomForest(Attrition~., data = train)
+randomForest::randomForest(Attrition~., data = train)
+randomForest::randomForest(Attrition~., data = train)
+pred = predict(rf, test, type = "response")
+runApp()
+ggplot(data = raw, aes(x = Department, y = EmployeeCount)) + geom_col(colour="#F8766D") +
+labs(title = "EmployeeCount by Department")
+ggplot(data = raw, aes(x = Department, y = EmployeeCount)) + geom_col(colour="#F8766D") +
+ggplot(data = raw, aes(x = Department, y = EmployeeCount)) + geom_col(colour="#F8766D") +
+labs(title = "EmployeeCount by Department")
+}
+ggplot(data = raw, aes(x = Department, y = EmployeeCount)) + geom_col(colour="#F8766D") +
+labs(title = "EmployeeCount by Department")
+})
+runApp()
+data %>%
+group_by(Attrition) %>%
+tally() %>%
+ggplot(aes(x = Attrition, y = n,fill=Attrition)) +
+geom_bar(stat = "identity") +
+theme_minimal()+
+labs(x="퇴사여부", y="퇴사자 수")+
+geom_text(aes(label = n), vjust = -0.5, position = position_dodge(0.9)) +
+theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
+ggplot(data=data, aes(data$Age)) +
+geom_histogram(breaks=seq(20, 50, by=2),
+aes(fill=..count..))+
+labs(x="연령대", y="퇴사자") +
+scale_fill_gradient("Count", low="skyblue", high="navy")
+scale_color_steps()
+barplot(counts, main="Grouped Bar Plot",
+xlab="Gender", ylab="Attrition",
+col=c("red", "green"),
+legend=rownames(counts), beside=TRUE)
+apply(is.na(data), 2, sum)
+barplot(counts,
+main = "Gender Count",
+xlab = "Gender", ylab = "Attrition",
+col=c("red", "green"),
+legend=rownames(counts)
+)
+data %>%
+group_by(Attrition) %>%
+tally() %>%
+ggplot(aes(x = Attrition, y = n,fill=Attrition)) +
+geom_bar(stat = "identity") +
+theme_minimal()+
+labs(x="퇴사여부", y="퇴사자 수")+
+geom_text(aes(label = n), vjust = -0.5, position = position_dodge(0.9)) +
+theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
+prop.table(table(data$Attrition))
+raw %>%
+mutate(Department = case_when(
+Department == "Research & Development" ~ "Audit",
+Department == "Sales" ~ "Tax",
+Department == "Human Resources" ~ "CSDA"
+)) %>%
+mutate(DistanceFromHome = case_when(
+DistanceFromHome %in%  1:10  ~ "30분 미만",
+DistanceFromHome %in%  11:20 ~ "1시간 미만",
+DistanceFromHome %in%  21:30 ~ " 1시간 이상"
+))
+count.dp <- ggplot(data = raw, aes(x = Department, y = EmployeeCount)) + geom_col(colour="#F8766D") +
+labs(title = "EmployeeCount by Department")
+raw %>%
+mutate(Department = case_when(
+Department == "Research & Development" ~ "Audit",
+Department == "Sales" ~ "Tax",
+Department == "Human Resources" ~ "CSDA"
+)) %>%
+mutate(DistanceFromHome = case_when(
+DistanceFromHome %in%  1:10  ~ "30분 미만",
+DistanceFromHome %in%  11:20 ~ "1시간 미만",
+DistanceFromHome %in%  21:30 ~ " 1시간 이상"
+)) %>%
+mutate(EducationField = case_when(
+EducationField == "Marketing" ~ "인문학",
+EducationField == "Life Sciences" ~ "기술공학",
+EducationField == "Medical" ~ "상경계",
+EducationField == "Technical Degree" ~ "자연과학",
+EducationField == "Human Resources" ~ "예체능",
+EducationField == "Other" ~ "기타"
+))  %>%
+mutate(JobRole = case_when(
+JobRole == "Sales Executive" ~ "감사직",
+JobRole == "Research Scientist" ~ "컨설팅직",
+JobRole == "Healthcare Representative" ~ "투자자문직",
+JobRole == "Laboratory Technician" ~ "기술컨설팅직",
+JobRole == "Manufacturing Director" ~ "세무직",
+JobRole == "Human Resources" ~ "사무직",
+JobRole == "Manager" ~ "연구직",
+JobRole == "Research Director" ~ "기술직",
+JobRole == "Sales Representative" ~ "영업직"
+)) %>%
+mutate(BirthYear = 2020 - Age) %>%
+mutate(MonthlyLeaves = sample(0:3, n(), replace = TRUE))  %>%
+mutate(OverTimeHours = ifelse(OverTime == "Yes", sample(1:52, n(), replace = TRUE), 0))
+raw =
+raw %>%
+mutate(Department = case_when(
+Department == "Research & Development" ~ "Audit",
+Department == "Sales" ~ "Tax",
+Department == "Human Resources" ~ "CSDA"
+)) %>%
+mutate(DistanceFromHome = case_when(
+DistanceFromHome %in%  1:10  ~ "30분 미만",
+DistanceFromHome %in%  11:20 ~ "1시간 미만",
+DistanceFromHome %in%  21:30 ~ " 1시간 이상"
+)) %>%
+mutate(EducationField = case_when(
+EducationField == "Marketing" ~ "인문학",
+EducationField == "Life Sciences" ~ "기술공학",
+EducationField == "Medical" ~ "상경계",
+EducationField == "Technical Degree" ~ "자연과학",
+EducationField == "Human Resources" ~ "예체능",
+EducationField == "Other" ~ "기타"
+))  %>%
+mutate(JobRole = case_when(
+JobRole == "Sales Executive" ~ "감사직",
+JobRole == "Research Scientist" ~ "컨설팅직",
+JobRole == "Healthcare Representative" ~ "투자자문직",
+JobRole == "Laboratory Technician" ~ "기술컨설팅직",
+JobRole == "Manufacturing Director" ~ "세무직",
+JobRole == "Human Resources" ~ "사무직",
+JobRole == "Manager" ~ "연구직",
+JobRole == "Research Director" ~ "기술직",
+JobRole == "Sales Representative" ~ "영업직"
+)) %>%
+mutate(BirthYear = 2020 - Age) %>%
+mutate(MonthlyLeaves = sample(0:3, n(), replace = TRUE))  %>%
+mutate(OverTimeHours = ifelse(OverTime == "Yes", sample(1:52, n(), replace = TRUE), 0))
+runApp()
+data %>%
+group_by(Attrition) %>%
+tally() %>%
+ggplot(aes(x = Attrition, y = n,fill=Attrition)) +
+geom_bar(stat = "identity") +
+theme_minimal()+
+labs(x="퇴사여부", y="퇴사자 수")+
+geom_text(aes(label = n), vjust = -0.5, position = position_dodge(0.9)) +
+theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
+# Age 확인 > 분포도
+ggplot(data=data, aes(data$Age)) +
+geom_histogram(breaks=seq(20, 50, by=2),
+aes(fill=..count..))+
+labs(x="연령대", y="퇴사자") +
+scale_fill_gradient("Count", low="skyblue", high="navy")
+runApp()
+data
+glimps(data)
+glimpse(data)
+table(data$BirthYear)
+prop.table(table(raw$Attrition))
+set.seed(111)
+xgb_mod1=xgb.train(params = param,
+data=dtrain,
+watchlist = watch,
+nrounds = 600,
+verbose = 1)
+install.packages("xgboost")
+library(xgboost)
+xgb
+install.packages("xgboost")
+str(train)
+xgb_mod1= xgb.train(params = param,
+data=dtrain,
+watchlist = watch,
+nrounds = 600,
+verbose = 1)
+xgb_mod1= train(params = param,
+data=dtrain,
+watchlist = watch,
+nrounds = 600,
+verbose = 1)
+xgb_mod1= xgb.train(params = param,
+data=train,
+watchlist = watch,
+nrounds = 600,
+verbose = 1)
+set.seed(111)
+xgb_mod1= xgb.train(params = param,
+data=train,
+watchlist = watch,
+nrounds = 600,
+verbose = 1)
+library(xgboost)
+library(xgboost)
+install.packages("RCurl")
+install.packages("Rcpp")
+install.packages("xml2")
+install.packages("devtools")
+devtools::install_github('dmlc/xgboost',subdir='R-package')
