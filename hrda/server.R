@@ -65,15 +65,14 @@ shinyServer(function(input, output) {
     output$gg2_1 <- renderPlot({
         
         data %>% select(Department, MonthlyIncome, Attrition) %>% group_by(Attrition, Department) %>%
-            summarize(avg.inc=mean(MonthlyIncome)) %>%
-            ggplot(aes(x=reorder(Department, avg.inc), y=avg.inc, fill=Attrition)) + geom_bar(stat="identity", position="dodge", alpha = 0.8) + facet_wrap(~Attrition) + 
+            summarize(avg = mean(MonthlyIncome)) %>%
+            ggplot(aes(x = reorder(Department, avg), y=avg, fill=Attrition)) + 
+            geom_bar(stat="identity", position="dodge", alpha = 0.8) + facet_wrap(~Attrition) + 
             theme_minimal() + theme(axis.text.x = element_text(angle = 90), plot.title=element_text(hjust=0.8)) + 
             scale_fill_manual(values=c("grey", "tomato")) + 
             labs(y="평균임금", x="부서", title="퇴사/재직자 별 부서별 임금비교") + 
-            geom_text(aes(x=Department, y=0.01, label= paste0("$ ", round(avg.inc,2))),
-                      hjust=-0.5, vjust=0, size=3, 
-                      colour="black", fontface="bold",
-                      angle=90) + 
+            geom_text(aes(x=Department, label= round(avg)),
+                      vjust=2, size=5) + 
             theme_minimal() + 
             theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
     })     
