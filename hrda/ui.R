@@ -4,7 +4,9 @@ library(tidyverse)
 library(ggplot2)
 library(ggpubr)
 library(DT)
-
+library(extrafont)
+library(GGally)
+library(plotly)
 
 # Define UI for application that draws a histogram
 ui <- dashboardPage(skin="blue",
@@ -20,8 +22,8 @@ ui <- dashboardPage(skin="blue",
             menuItem("상관분석", icon = icon("th"), tabName = "widgets",
                      badgeColor = "green"),
             menuItem("시각화", icon = icon("bar-chart-o"),
-                     menuSubItem("Sub-item 1", tabName = "subitem1"),
-                     menuSubItem("Sub-item 2", tabName = "subitem2")
+                     menuSubItem("모델링", tabName = "visitem1"),
+                     menuSubItem("예측", tabName = "visitem2")
             ),
             #menuItem("About", tabName = "about")
             menuItem("About", 
@@ -37,8 +39,25 @@ ui <- dashboardPage(skin="blue",
         tabItems(
             tabItem(tabName = "dashboard",
                     fluidRow(
-                      column(6, plotOutput("genderPlot")),
-                      column(6, plotOutput("dpPlot"))
+                        
+                        valueBoxOutput("employee", width = 3),                       
+                        
+                        valueBoxOutput("retirees", width = 3),                       
+                        
+                        valueBoxOutput("refresh", width = 3),
+                        
+                        valueBoxOutput("retention", width = 3),
+                        
+                        
+                    ),
+                    fluidRow(
+                        column(6, plotOutput("round.Att")),
+                        column(6, plotOutput("genderPlot")),
+                    ),
+                    
+                    fluidRow(                    
+                        column(6, plotOutput("dpPlot")),
+                        column(6, plotOutput("ageplot"))
                     )
             ),
             
@@ -87,13 +106,29 @@ ui <- dashboardPage(skin="blue",
                                  ))
                     )
             ),
-            tabItem(tabName = "subitem1",
-                    h2("subitem1 tab content")
+            tabItem(tabName = "visitem1",
+                    h2("Random Forest"),
+                    includeMarkdown("doc/RandomForest.rmd")
             ),
             
-            tabItem(tabName = "subitem2",
-                    h2("subitem2 tab content")
-            ),
+            tabItem(tabName = "visitem2",
+                    h2("visitem2 tab content"),
+                    sidebarPanel(width = 4,
+                                 textInput("text", label = h3("사번 입력"), ),
+                                 checkboxGroupInput(inputId = "EmpNo",
+                                                     label = '요인:', choices = c("MonthlyIncome" = "MonthlyIncome", 
+                                                                                "OverTimeHours" = "OverTimeHours",
+                                                                                "TotalWorkingYears"="TotalWorkingYears",
+                                                                                "BirthYear"="BirthYear","Age"="Age"
+                                                     ),
+                                                     selected = c("MonthlyIncome"="MonthlyIncome"),inline=TRUE),
+                                 submitButton("조회")
+                                 ),
+                    mainPanel(
+                        column(8, plotlyOutput("plot1", width = 800, height=700),
+                               p("..."))
+                    )
+                    ),
             tabItem(tabName = "about",
                     h2("개발 계획서"),
                     includeMarkdown("doc/plan.rmd")
