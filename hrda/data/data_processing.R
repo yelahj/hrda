@@ -24,8 +24,8 @@ raw$Gender <-as.factor(raw$Gender)
 
 # 삭제 변수
 drop.cols <- c("DailyRate", "EmployeeCount", "HourlyRate", "MonthlyRate", "Over18", "StockOptionLevel")
-data = 
-raw %>%
+raw = 
+  raw %>%
   select (-drop.cols)
 
 # 데이터 치환
@@ -47,7 +47,7 @@ c("감사직","컨설팅직","투자자문직", "기술컨설팅직", "세무직
 # 추가 변수
 c("BirthYear", "Functions", "OverTimeHours", "MonthlyLeaves")
 
-data =
+raw =
   raw %>%
   mutate(Department = case_when(
     Department == "Research & Development" ~ "Audit",
@@ -84,4 +84,53 @@ data =
 
 
 
+str(raw)
+raw$Department <- as.numeric(as.factor(raw$Department))
+raw$BusinessTravel <- as.numeric(as.factor(raw$BusinessTravel))
+raw$EducationField <- as.numeric(as.factor(raw$EducationField))
+raw$Gender <- as.numeric(as.factor(raw$Gender))
+raw$JobRole <- as.numeric(as.factor(raw$JobRole))
+raw$MaritalStatus <- as.numeric(as.factor(raw$MaritalStatus))
+raw$OverTime <- as.numeric(as.factor(raw$OverTime))
+# raw$Over18 <- as.numeric(as.factor(raw$Over18))
+raw$DistanceFromHome <- as.numeric(as.factor(raw$DistanceFromHome))
 
+
+hist(raw$DailyRate, main ="DailyRate",xlab="") 
+hist((raw$Department), main = "Department",xlab="")
+hist((raw$MonthlyIncome), main = "MonthlyIncome",xlab="")
+hist(raw$MaritalStatus, main="MaritalStatus",xlab="")
+hist(raw$OverTime, main ="OverTime",xlab="")
+hist(raw$JobRole, main = "JobRole",xlab="")
+hist(raw$TotalWorkingYears, main = "TotalWorkingYears",xlab="")
+
+boxplot(raw$DailyRate, main ="DailyRate",xlab="") 
+boxplot((raw$Department), main = "Department",xlab="")
+boxplot((raw$MonthlyIncome), main = "MonthlyIncome",xlab="")
+boxplot(raw$MaritalStatus, main="MaritalStatus",xlab="")
+boxplot(raw$OverTime, main ="OverTime",xlab="")
+boxplot(raw$JobRole, main = "JobRole",xlab="")
+boxplot(raw$TotalWorkingYears, main = "TotalWorkingYears",xlab="")
+
+library(raw.table)
+library(scales)
+x <- raw
+x
+str(raw)
+
+# 정규화
+raw.scaled <- scale(x)
+raw.scaled <- cbind(raw[2], raw.scaled) #add target variable back
+
+
+#skewed raw
+library(moments)
+skewness(raw.scaled$MonthlyIncome)
+skewness(raw.scaled$Department)
+skewness(raw.scaled$MaritalStatus)
+skewness(raw.scaled$TotalWorkingYears)
+skewness(raw.scaled$JobRole)
+
+
+
+data <- raw 

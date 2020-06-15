@@ -3,9 +3,13 @@ library(tidyverse)
 library(tidymodels)
 library(randomForest)
 library(yardstick)
+library(showtext)
 
+font_add_google("Nanum Gothic", "nanumgothic")
 # install.packages('randomForest')
 
+raw = data
+data = raw
 # Train / Test 데이터로 분류 [*] Attritiond을 기준으로 비율을 정해야 한다.
 prop.table(table(raw$Attrition)) 
 ## 75%로 샘플 사이즈 변경하기 smp_size는 75% 로 실행
@@ -34,6 +38,7 @@ data %>%
   initial_split(prop=0.7) -> data_split
 
 data_split
+str(data_split)
 
 data_split %>%
   training()
@@ -41,47 +46,84 @@ data_split %>%
 data_split %>%
   testing()
 
+colnames(data)
+
 data_split %>% training() %>%
   recipe(Attrition~
-         + Age
-         + MaritalStatus 
+           + Age
+         + BusinessTravel
+         + Department              
+         + DistanceFromHome
+         + Education
+         + EducationField
+         # + EmployeeNumber          
+         + EnvironmentSatisfaction
          + Gender
-         + NumCompaniesWorked
-         + TotalWorkingYears
          + JobInvolvement
-         + JobLevel
+         + JobLevel                
          + JobRole
-         + MonthlyIncome
+         + JobSatisfaction
+         + MaritalStatus
+         + MonthlyIncome           
+         + NumCompaniesWorked
          + OverTime
          + PercentSalaryHike
+         + PerformanceRating       
+         + RelationshipSatisfaction
          + StandardHours
+         + TotalWorkingYears
+         + TrainingTimesLastYear   
+         + WorkLifeBalance
          + YearsAtCompany
          + YearsInCurrentRole
-         + YearsSinceLastPromotion
-         + TrainingTimesLastYear
+         + YearsSinceLastPromotion 
          + YearsWithCurrManager
-         + PerformanceRating
-         + JobSatisfaction
-         + RelationshipSatisfaction
-         + EnvironmentSatisfaction)
+         #+ ID
+         #+ BirthYear
+         #+ MonthlyLeaves           
+         + OverTimeHours  )
 
 # 결측치 없음..?
 sum(is.na(data))
 
+view(data_split)
+
 data_split %>% training() %>%
   recipe(Attrition~
-         + Age
+           + Age
+         + BusinessTravel
+         + Department              
+         + DistanceFromHome
+         + Education
+         + EducationField
+         # + EmployeeNumber          
+         + EnvironmentSatisfaction
+         + Gender
+         + JobInvolvement
+         + JobLevel                
+         + JobRole
+         + JobSatisfaction
+         + MaritalStatus
+         + MonthlyIncome           
          + NumCompaniesWorked
-         + TotalWorkingYears
-         + MonthlyIncome
+         + OverTime
          + PercentSalaryHike
+         + PerformanceRating       
+         + RelationshipSatisfaction
+         + StandardHours
+         + TotalWorkingYears
+         + TrainingTimesLastYear   
+         + WorkLifeBalance
          + YearsAtCompany
          + YearsInCurrentRole
-         + PerformanceRating
-         + JobSatisfaction
-         + RelationshipSatisfaction
-         + EnvironmentSatisfaction) %>%
-  step_corr(all_predictors()) %>% # 상관관계가 지나치게 큰 변수를 제거
+         + YearsSinceLastPromotion 
+         + YearsWithCurrManager
+         #+ ID
+         #+ BirthYear
+         #+ MonthlyLeaves           
+         + OverTimeHours  
+           ) %>%
+  #step_corr(all_predictors()) %>% # 상관관계가 지나치게 큰 변수를 제거
   step_center(all_predictors(), -all_outcomes()) %>% # 평균을 0으로 하는 척도  
   step_scale(all_predictors(), -all_outcomes()) %>%
   prep() -> data_recipe
@@ -108,20 +150,40 @@ data_training
 rand_forest(trees=100, mode='regression') %>%
   set_engine('randomForest') %>%
   fit(Attrition~
-      + Age
+        + Age
+      + BusinessTravel
+      + Department              
+      + DistanceFromHome
+      + Education
+      + EducationField
+      # + EmployeeNumber          
+      + EnvironmentSatisfaction
+      + Gender
+      + JobInvolvement
+      + JobLevel                
+      + JobRole
+      + JobSatisfaction
+      + MaritalStatus
+      + MonthlyIncome           
       + NumCompaniesWorked
-      + TotalWorkingYears
-      + MonthlyIncome
+      + OverTime
       + PercentSalaryHike
+      + PerformanceRating       
+      + RelationshipSatisfaction
+      + StandardHours
+      + TotalWorkingYears
+      + TrainingTimesLastYear   
+      + WorkLifeBalance
       + YearsAtCompany
       + YearsInCurrentRole
-      + PerformanceRating
-      + JobSatisfaction
-      + RelationshipSatisfaction
-      + EnvironmentSatisfaction
+      + YearsSinceLastPromotion 
+      + YearsWithCurrManager
+      #+ ID
+      #+ BirthYear
+      #+ MonthlyLeaves   
+      + OverTimeHours   
     , data=data_training) -> data_rg
 
-data_rg
 
 result = 
 data_rg %>% 
@@ -135,10 +197,30 @@ data_rg %>%
   bind_cols(data_testing)
 
 
+
 # 성능측정
 
 data_rg %>%
   predict(data_testing) %>%
   bind_cols(data_testing) %>%
   metrics(truth=Attrition, estimate=.pred_res)
+
+remove(df)
+library(doBy)
+library(fmsb)
+library(MASS)
+
+df_radarchart <- function(df) {
+  df <- data.frame(df)
+  dfmax <- apply(df, 2, max)
+  dfmin <- apply(df, 2, min)
+  as.data.frame(rbind(dfmax,dfmin,df))
+}
+
+mean_by_Type <- summaryBy
+
+mean_by_Type_scale <- 
+
+radarchart(df = mean_by_type_sc)
+
 
