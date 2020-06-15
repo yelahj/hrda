@@ -1,0 +1,85 @@
+# 0. 환경설정 ------
+library(tidyverse)
+library(caret)
+library(janitor)
+library(ggridges)
+library(ggthemes)
+library(cowplot)
+library(corrplot)
+library(corrr)
+library(plotly)
+library(crosstalk)
+
+# 1. 데이터 ------
+idx <- createDataPartition(data$Attrition, 
+                           p = 0.7, 
+                           list = FALSE, 
+                           times = 1)
+
+data_train <- data[ idx,]
+data_test  <- data[-idx,]
+
+
+## 2.2. 모형적합 ------
+fit_ctrl <- trainControl(method = "repeatedcv", number = 5, repeats = 3)
+
+data_rf <- train(Attrition ~ ., 
+                 data = data_train, 
+                 method = "rf", 
+                 preProcess = c("scale", "center"),
+                 trControl = fit_ctrl,
+                 verbose = FALSE)
+
+## 2.3. 모형성능평가 ------
+test_predict <- predict(data_rf, data_test)
+confusionMatrix(test_predict, data_test$Attrition)
+
+
+
+
+# 3. 모형 설명 -----
+## 3.1. 중요변수 추출 -----
+data_rf_imp <- varImp(data_rf, scale = TRUE)
+
+(top_three_variable_v <- data_rf_imp$importance %>%
+    as.data.frame() %>%
+    rownames_to_column(var="variable") %>% 
+    top_n(10, Overall) %>% 
+    pull(variable))
+
+
+data_rf_imp$importance %>%
+  as.data.frame() %>%
+  rownames_to_column(var="variable") %>%
+  ggplot(aes(x = reorder(variable, Overall), y = Overall)) +
+  geom_bar(stat = "identity", fill = "#1F77B4", alpha = 0.8) +
+  coord_flip() +
+  labs(y="중요도", x="요소") +
+  theme_minimal(base_family="NanumGothic")
+
+
+
+
+
+# 2. 탐색적 데이터 분석 ------
+## 2.1. 정적 시각화 -----
+y_p <- 
+  data %>%
+  ggplot(aes(x = Attrition, fill = Attrition)) +
+  geom_bar(alpha = 0.8) +
+  scale_fill_manual(values = c("grey", "red")) +
+  guides(fill = FALSE)
+
+x_p <- 
+  data %>%
+  gather(variable, value, Age:OverTimeHours) %>%
+  ggplot(aes(x = value, y = Attrition, color = Attrition, fill = Attrition)) +
+  facet_wrap( ~ variable, scale = "free", ncol = 3) +
+  scale_color_manual(values = c("red", "grey")) +
+  scale_fill_manual(values = c("red", "grey")) +
+  geom_density_ridges(alpha = 0.8) +
+  guides(fill = FALSE, color = FALSE)
+
+plot_grid(y_p, x_p, rel_widths = c(1,3))
+
+

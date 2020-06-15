@@ -17,11 +17,11 @@ smp_size <- floor(0.75 * nrow(raw))
 set.seed(123)
 
 ## train_ind <- sample 인덱스
-train_ind <- sample(seq_len(nrow(raw)), size = smp_size)
+train_ind <- sample(seq_len(nrow(data)), size = smp_size)
 
 ### Train & Test data 
-train <- raw[train_ind, ]
-test <- raw[-train_ind, ]
+train <- data[train_ind, ]
+test <- data[-train_ind, ]
 
 test_label <- test$ID
 train_label <- train$ID
@@ -48,6 +48,9 @@ data_split %>%
 
 colnames(data)
 
+
+#num <- select_if(data, is.numeric)
+
 data_split %>% training() %>%
   recipe(Attrition~
            + Age
@@ -58,6 +61,7 @@ data_split %>% training() %>%
          + EducationField
          # + EmployeeNumber          
          + EnvironmentSatisfaction
+         + MaritalStatus 
          + Gender
          + JobInvolvement
          + JobLevel                
@@ -82,6 +86,15 @@ data_split %>% training() %>%
          #+ BirthYear
          #+ MonthlyLeaves           
          + OverTimeHours  )
+         + JobSatisfaction
+         + RelationshipSatisfaction
+         + EnvironmentSatisfaction
+         + DistanceFromHome
+         + EducationField
+         + Department
+         + MonthlyLeaves
+         + OverTimeHours
+           )
 
 # 결측치 없음..?
 sum(is.na(data))
@@ -91,44 +104,36 @@ view(data_split)
 data_split %>% training() %>%
   recipe(Attrition~
            + Age
-         + BusinessTravel
-         + Department              
-         + DistanceFromHome
-         + Education
-         + EducationField
-         # + EmployeeNumber          
-         + EnvironmentSatisfaction
+         + MaritalStatus 
          + Gender
-         + JobInvolvement
-         + JobLevel                
-         + JobRole
-         + JobSatisfaction
-         + MaritalStatus
-         + MonthlyIncome           
          + NumCompaniesWorked
+         + TotalWorkingYears
+         + JobInvolvement
+         + JobLevel
+         + JobRole
+         + MonthlyIncome
          + OverTime
          + PercentSalaryHike
-         + PerformanceRating       
-         + RelationshipSatisfaction
          + StandardHours
-         + TotalWorkingYears
-         + TrainingTimesLastYear   
-         + WorkLifeBalance
          + YearsAtCompany
          + YearsInCurrentRole
-         + YearsSinceLastPromotion 
+         + YearsSinceLastPromotion
+         + TrainingTimesLastYear
          + YearsWithCurrManager
-         #+ ID
-         #+ BirthYear
-         #+ MonthlyLeaves           
-         + OverTimeHours  
-           ) %>%
-  #step_corr(all_predictors()) %>% # 상관관계가 지나치게 큰 변수를 제거
+         + PerformanceRating
+         + JobSatisfaction
+         + RelationshipSatisfaction
+         + EnvironmentSatisfaction
+         + DistanceFromHome
+         + EducationField
+         + Department
+         + MonthlyLeaves
+         + OverTimeHours
+         ) %>%
+  step_corr(all_predictors()) %>% # 상관관계가 지나치게 큰 변수를 제거
   step_center(all_predictors(), -all_outcomes()) %>% # 평균을 0으로 하는 척도  
   step_scale(all_predictors(), -all_outcomes()) %>%
   prep() -> data_recipe
-
-select_if(data, is.numeric)
 
 data_recipe
 
@@ -143,6 +148,8 @@ data_recipe %>%
 data_training
 
 
+prop.table(table(data_training$Attrition)) 
+prop.table(table(data_testing$Attrition)) 
 
 #---------------------랜덤포레스트 : 회귀 
 # mode는 회귀와 분류가 있따. 
@@ -150,39 +157,35 @@ data_training
 rand_forest(trees=100, mode='regression') %>%
   set_engine('randomForest') %>%
   fit(Attrition~
-        + Age
-      + BusinessTravel
-      + Department              
-      + DistanceFromHome
-      + Education
-      + EducationField
-      # + EmployeeNumber          
-      + EnvironmentSatisfaction
+
+      + Age
+      + MaritalStatus 
       + Gender
-      + JobInvolvement
-      + JobLevel                
-      + JobRole
-      + JobSatisfaction
-      + MaritalStatus
-      + MonthlyIncome           
       + NumCompaniesWorked
+      + TotalWorkingYears
+      + JobInvolvement
+      #+ JobLevel
+      + JobRole
+      + MonthlyIncome
       + OverTime
       + PercentSalaryHike
-      + PerformanceRating       
-      + RelationshipSatisfaction
       + StandardHours
-      + TotalWorkingYears
-      + TrainingTimesLastYear   
-      + WorkLifeBalance
       + YearsAtCompany
       + YearsInCurrentRole
-      + YearsSinceLastPromotion 
+      + YearsSinceLastPromotion
+      + TrainingTimesLastYear
       + YearsWithCurrManager
-      #+ ID
-      #+ BirthYear
-      #+ MonthlyLeaves   
-      + OverTimeHours   
+      + PerformanceRating
+      + JobSatisfaction
+      + RelationshipSatisfaction
+      + EnvironmentSatisfaction
+      + DistanceFromHome
+      + EducationField
+      + Department
+      + MonthlyLeaves
+      #+ OverTimeHours
     , data=data_training) -> data_rg
+
 
 
 result = 

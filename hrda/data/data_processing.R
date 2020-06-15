@@ -2,7 +2,7 @@ library(tidyverse)
 library(dplyr)
 
 # 1. IBM HR Analysis on Kaggle에서 제공하는 IBM 데이터를 활용하여 데이터를 분석합니다.
-raw <- read_csv("hrda/data/dataset.csv")
+raw <- read_csv("data/dataset.csv")
 
 view(raw)
 dim(raw)
@@ -16,7 +16,7 @@ raw$Attrition <- as.integer(as.character(raw$Attrition)=="Yes")
 raw$Attrition <-as.factor(raw$Attrition)
 
 # 전체 데이터셋에 Index 변수 추가 (index)
-raw$ID <- seq.int(nrow(raw))
+# raw$ID <- seq.int(nrow(raw))
 
 # gender 값을 1,0으로 변경
 raw$Gender <- as.integer(as.character(raw$Gender)=="Female")
@@ -24,9 +24,10 @@ raw$Gender <-as.factor(raw$Gender)
 
 # 삭제 변수
 drop.cols <- c("DailyRate", "EmployeeCount", "HourlyRate", "MonthlyRate", "Over18", "StockOptionLevel")
-raw = 
-  raw %>%
-  select (-drop.cols)
+
+data <-
+raw %>%
+  select (-drop.cols )
 
 # 데이터 치환
 # Departmemt Update
@@ -82,6 +83,7 @@ raw =
   mutate(MonthlyLeaves = sample(0:3, n(), replace = TRUE))  %>%
   mutate(OverTimeHours = ifelse(OverTime == "Yes", sample(1:52, n(), replace = TRUE), 0))
 
+data <- raw
 
 
 str(raw)
@@ -132,5 +134,37 @@ skewness(raw.scaled$TotalWorkingYears)
 skewness(raw.scaled$JobRole)
 
 
+=======
+#pie 그래프
+install.packages("ggplot2")
+library(ggplot2)
+
+
+round.Att <- table(raw$Attrition)
+pie(round.Att)
+label <- paste(names(round.Att), "\n", round.Att)
+label
+pie(round.Att, labels = label)
+
+label <- paste(names(round.Att), "\n", round.Att/sum(round.Att)*100)
+label
+pie(round.Att, labels=label)
+
+pct <- round(round.Att/sum(round.Att)*100,2)
+label <- paste(names(round.Att), "\n", pct, "%")
+colors = c("rosybrown2", "#F8766D")
+pie(round.Att, col = colors, labels=label,  main = "Employee Status")
+
+# converting factor into numeric
+
+data$Department <- as.numeric(as.factor(data$Department))
+data$BusinessTravel <- as.numeric(as.factor(data$BusinessTravel))
+data$EducationField <- as.numeric(as.factor(data$EducationField))
+data$Gender <- as.numeric(as.factor(data$Gender))
+data$JobRole <- as.numeric(as.factor(data$JobRole))
+data$MaritalStatus <- as.numeric(as.factor(data$MaritalStatus))
+data$OverTime <- as.numeric(as.factor(data$OverTime))
+data$DistanceFromHome <- as.numeric(as.factor(data$DistanceFromHome))
+#data$Over18 <- as.numeric(as.factor(data$Over18))
 
 data <- raw 

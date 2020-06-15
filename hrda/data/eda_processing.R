@@ -57,7 +57,7 @@ data %>%
 prop.table(table(data$Attrition))
 
 # Age 확인 > 분포도 
-ggplot(data=data, aes(data$Age)) + 
+ggplot(data=data, aes(data$Age, data$Gender)) + 
   geom_histogram(breaks=seq(20, 50, by=2), 
                  aes(fill=..count..))+
   labs(x="연령대", y="퇴사자") +
@@ -134,13 +134,151 @@ v_ds <- v_data %>%
 v_ds
 
 
+## 
+# 0. 환경설정 ------
+library(tidyverse)
+library(caret)
+library(janitor)
+library(ggridges)
+library(ggthemes)
+library(cowplot)
+library(corrplot)
+library(corrr)
+library(plotly)
+library(crosstalk)
 
-head(data)
+# 1. 데이터 ------
+idx <- createDataPartition(data$Attrition, 
+                           p = 0.7, 
+                           list = FALSE, 
+                           times = 1)
 
-# Feature Selection
-
-# Feature Engineering
-
+data_train <- data[ idx,]
+data_test  <- data[-idx,]
 
 
+## 2.2. 모형적합 ------
+fit_ctrl <- trainControl(method = "repeatedcv", number = 5, repeats = 3)
+
+data_rf <- train(Attrition ~ ., 
+                 data = data_train, 
+                 method = "rf", 
+                 preProcess = c("scale", "center"),
+                 trControl = fit_ctrl,
+                 verbose = FALSE)
+
+## 2.3. 모형성능평가 ------
+test_predict <- predict(data_rf, data_test)
+confusionMatrix(test_predict, data_test$Attrition)
+
+
+
+
+# 3. 모형 설명 -----
+## 3.1. 중요변수 추출 -----
+data_rf_imp <- varImp(data_rf, scale = TRUE)
+
+(top_ten_variable_v <- data_rf_imp$importance %>%
+    as.data.frame() %>%
+    rownames_to_column(var="variable") %>% 
+    top_n(10, Overall) %>% 
+    pull(variable))
+
+
+data_rf_imp$importance %>%
+  as.data.frame() %>%
+  rownames_to_column(var="variable") %>%
+  ggplot(aes(x = reorder(variable, Overall), y = Overall)) +
+  geom_bar(stat = "identity", fill = "#1F77B4", alpha = 0.8) +
+  coord_flip() +
+  labs(y="중요도", x="요소") +
+  theme_minimal(base_family="NanumGothic")
+
+
+
+
+
+# 2. 탐색적 데이터 분석 ------
+## 2.1. 정적 시각화 -----
+y_p <- 
+  data %>%
+  ggplot(aes(x = Attrition, fill = Attrition)) +
+  geom_bar(alpha = 0.8) +
+  scale_fill_manual(values = c("grey", "red")) +
+  guides(fill = FALSE)
+
+x_p <- 
+  data %>%
+  gather(variable, value, Age:OverTimeHours) %>%
+  ggplot(aes(x = value, y = Attrition, color = Attrition, fill = Attrition)) +
+  facet_wrap( ~ variable, scale = "free", ncol = 3) +
+  scale_color_manual(values = c("red", "grey")) +
+  scale_fill_manual(values = c("red", "grey")) +
+  geom_density_ridges(alpha = 0.8) +
+  guides(fill = FALSE, color = FALSE)
+
+plot_grid(y_p, x_p, rel_widths = c(1,3))
+
+
+
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(ggcorrplot))
+library(RColorBrewer)
+library(rpart)
+
+suppressPackageStartupMessages(library(caret))
+suppressPackageStartupMessages(library(rpart.plot))
+library(ggplot2)
+suppressPackageStartupMessages(library(tree))
+
+# 각 변수별 상관관계
+options(repr.plot.width=10, repr.plot.height=7) 
+
+nums <- select_if(data, is.numeric)
+
+corr <- round(cor(nums), 1)
+
+ggcorrplot(corr, 
+           type = "lower", 
+           lab = TRUE, 
+           lab_size = 2, 
+           method="square", 
+           colors = c("tomato2", "white", "#01A9DB"), 
+           title="각 변수별 상관관계", 
+           ggtheme=theme_minimal()
+           + theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
+)
+
+library("rpart.tree")
+install.packages("rpart.tree")
+
+options(repr.plot.width=10, repr.plot.height=8) 
+
+rpart.tree <- rpart(Attrition ~ ., data=data_train)
+plot(rpart.tree, uniform=TRUE, branch=0.6, margin=0.05)
+text(rpart.tree, all=TRUE, use.n=TRUE)
+title("decision tree")
+
+# Complicated DecisionTree, Is there a way to determine variable importance?
+var_imp <- data.frame(rpart.tree$variable.importance)
+var_imp$features <- rownames(var_imp)
+var_imp <- var_imp[, c(2, 1)]
+var_imp$importance <- round(var_imp$rpart.tree.variable.importance, 2)
+var_imp$rpart.tree.variable.importance <- NULL
+
+colorCount <- length(unique(var_imp$features))
+feature_importance <- var_imp %>%
+  ggplot(aes(x=reorder(features, importance), y=importance, fill=features)) + geom_bar(stat='identity') + coord_flip() + 
+  theme_minimal() + theme(legend.position="none", strip.background = element_blank(), strip.text.x = element_blank(), 
+                          plot.title=theme.ti, plot.subtitle=element_text(color="white"), plot.background=element_rect(fill="#FFFFFF"),
+                          axis.text.x=element_text(colour="black"), axis.text.y=element_text(colour="black"),
+                          axis.title=theme.ax, 
+                          legend.background = element_rect(fill="#FFFFFF",
+                                                           size=0.5, linetype="solid", 
+                                                           colour ="black")) + scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(colorCount)) + 
+  geom_label(aes(label=paste0(importance, "%")), colour = "black", fontface = "italic", hjust=0.6) + 
+  labs(title="요인별 중요도", x="요인", y="중요도")
+
+
+feature_importance
 

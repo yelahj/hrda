@@ -19,7 +19,7 @@ theme.lete<-element_text(family="NanumGothic") #범례 항목 (legend) 스타일
 # numeric 변수들의 corr
 ggcorr(data)
 
-option(digit=2)
+option(digit=2)  444444444444
 cor(data)
 
 
@@ -136,4 +136,48 @@ ggplot(data,
 #- 부서별 overtime
 #- 부서별 refresh 발생율
 #- 부서별 refresh 소진율
+
+
+
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(ggcorrplot))
+
+options(repr.plot.width=10, repr.plot.height=7) 
+
+nums <- select_if(data, is.numeric)
+
+corr <- round(cor(nums), 1)
+
+ggcorrplot(corr, 
+           type = "lower", 
+           lab = TRUE, 
+           lab_size = 2, 
+           method="square", 
+           colors = c("tomato2", "white", "#01A9DB"), 
+           title="각 변수별 상관관계", 
+           ggtheme=theme_minimal()
+           + theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
+)
+
+
+# radar chart
+fig <- plot_ly(
+  type = 'scatterpolar',
+  r = c(39, 28, 8, 7, 28, 39),
+  theta = c('A','B','C', 'D', 'E', 'A'),
+  fill = 'toself'
+) 
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,100)
+      )
+    ),
+    showlegend = F
+  )
+
+fig
+
 
