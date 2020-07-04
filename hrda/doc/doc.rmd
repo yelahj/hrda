@@ -1,0 +1,143 @@
+---
+title: "Pre-Processing and Feature Engineering"
+author: "정혜지"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+    highlight: tango
+editor_options: 
+  chunk_output_type: console
+params:
+   data_name: "data"
+---
+
+```{r echo=FALSE}
+knitr::read_chunk("../data/data_processing.R")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(skimr)
+library(knitr)
+library(tidyverse)
+```
+
+## 1. 원본 데이터
+
+  보안을 위해 실제 인사 데이터 사용이 아닌 사내에서 가용한 인사데이터 형태 기준으로 일부 가공하여 분석을 진행하였습니다.
+  
+  * 데이터 설명:
+  - Attrition (퇴사) Yes, No로 구분되어 Yes(1) 인 경우 퇴사, No(0)인 경우 재직
+  - 이 외 성별, 연령, 부서, 연봉 등 다양한 정보를 포함.
+
+``` {r message=FALSE, results='hide'}
+#source('../data/data_processing.R')
+```
+
+```{r message=FALSE}
+
+raw <- read_csv("../data/dataset.csv")
+kable(head(raw, 10), 
+      caption = "변형 데이터")
+```
+
+
+ 
+
+
+## 1.2. 데이터 가공 
+
+
++ 해당 데이터를 프로그램에 사용할 기본 데이터셋의 포맷으로 지정했고, 일부 컬럼을 사내환경에 맞춰 가공
+ - 사내 인사데이터에 해당되지 않는 변수 삭제 (예를 들면, StockOption, MonthlyHours, DailyHours... ) 
+ - 사내 인사데이터에서 활용할 수 있는 변수 추가 (기존에 OverTime이 Yes/No 값을 가진 범주형이 였기 때문에 Yes에 한하여 Random으로 OverTime 시간을 부여하여 OvertimeHours 생성)
+-  부서를 Audit / TAX / DEAL 로 변경
+-  통근거리를 범주화
+-  교육분야를 한국어로 변경
+-  역할을 회사 성격에 맞도록 수정
+
+``` {r  echo=FALSE}
+
+
+```
+
+
+
+
+
+# 2. 탐색적 분석(Exploratory Data Analysis - EDA)
+
++ 탐색적 분석이란, 수집한 데이터를 다양한 각도에서 관찰하고 이해하는 과정
+ - 데이터의 분포/ 값을 검토하여 데이터가 어떤 특성을 지니고 있는 지 파악하였습니다. 
+``` {r echo = FALSE}
+
+skimr::skim(raw)
+
+```
+
+
+ - 분석에 사용한 데이터는 연속형 Age, 범주형 : Attrition, Department 가 모두 함께 존재하므로 이를 하나로 통일해 주는 작업이 필요했고 범주형 데이터를 숫자로 치환하여 분석 작업을 하였습니다. (TidyModels 사용)
+
+
+``` 
+data$Department <- as.numeric(as.factor(data$Department))
+data$BusinessTravel <- as.numeric(as.factor(data$BusinessTravel))
+data$EducationField <- as.numeric(as.factor(data$EducationField))
+data$Gender <- as.numeric(as.factor(data$Gender))
+data$JobRole <- as.numeric(as.factor(data$JobRole))
+data$MaritalStatus <- as.numeric(as.factor(data$MaritalStatus))
+data$DistanceFromHome <- as.numeric(as.factor(data$DistanceFromHome))
+
+```
+
+
+ - 데이터를 분석하기 위해서 전체 데이터를 분류합니다. 
+학습용과 검증용으로 7:3 비율로 분류하여 학습용 데이터로 학습을 하고, 분류용 데이터는 학습된 것을 기반으로 각각의 값을 예측하는 역할을 합니다. 
+
+```
+
+data %>%
+  initial_split(prop=0.7) -> data_split
+
+data_split
+str(data_split)
+
+data_split %>%
+  training()
+
+data_split %>%
+  testing()
+
+data_training <- training(data_split)
+data_testing  <- testing(data_split)
+
+```
+
+
+- 분석을 통해 얻고자 하는 값은 "퇴사가능성" 이므로 기존에 퇴사한 사람들의 영향요인들을 수치화하여 Random Forest 기법으로 Attrition 값을 1과 0으로 분류하면서 이를 이분값이 아닌 확률값으로 도출하고자 했습니다. 
+
+``` {r echo = FALSE}
+
+```
+
+
+
++ 먼저 학습/검증용으로 분류한 데이터 중 학습 데이터를 이용하여 학습을 하고, 검증용 데이터로 예측한 값과 실제 값이 일치하는 지 확인하는 작업을 통해 Accuracy를 확인하면 다음과 같습니다.
+``` {r echo = FALSE}
+
+```
+
+
+ + 내림차 순으로 정렬해서 보면 가장 영향을 많이 미치는 요소는 아래 순서로 확인 할 수 있습니다.
+``` {r echo = FALSE}
+
+```
+
+
+EDA 분석을 통해 다음과 같은 요소들 중 영향을 많이 미치는 요소의 5가지를 그래프화 하였으며, 결과는 다음과 같습니다.
+``` {r echo = FALSE}
+
+
+```
+

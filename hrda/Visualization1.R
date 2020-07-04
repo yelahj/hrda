@@ -1,4 +1,5 @@
 # Visualizatoin 1
+Encoding(lines) <- "UTF-8"
 
 library(ggplot)
 library(reshape2)
@@ -7,7 +8,7 @@ library(extrafont)
 library(GGally)
 
 
-font_import(pattern = "D2")
+# font_import(pattern = "D2")
 
 theme_set(theme_grey(base_family='NanumGothic'))
 
@@ -19,7 +20,7 @@ theme.lete<-element_text(family="NanumGothic") #범례 항목 (legend) 스타일
 # numeric 변수들의 corr
 ggcorr(data)
 
-option(digit=2)  444444444444
+option(digit=2)
 cor(data)
 
 
@@ -29,7 +30,7 @@ cor(data)
 # 그래프 2. 학력별 퇴사율 
 
 table(data$Age)
-raw =
+raw =``
 raw %>%
   mutate(Ages = case_when(
     Age %in%  20:29  ~ "20대",
@@ -43,7 +44,7 @@ raw %>%
 
 da_yes <- 
 data %>%
-  filter(Attrition ==  "Yes")
+  filter(Attrition == "Yes")
 
 gg1_1_1 <- da_yes %>% 
   ggplot(aes(x=Age)) + 
@@ -74,7 +75,7 @@ ggarrange(gg1_1_1,ggarrange(gg1_1_2, gg1_1_3),nrow = 2)
 학력별
 
 gg1_2 =
-data %>% 
+raw %>% 
   ggplot(aes(x=Education)) +
   geom_bar(aes(fill=Attrition), position = position_dodge(), alpha = 0.8) +
   labs(title = "학력별", x="학력", y="수") +
@@ -87,7 +88,7 @@ data %>%
 
 #그래프1 부서별 연봉? 연봉과 퇴사 정보 비교 (gg2_1)
 
-gg2_1 <- data %>% select(Department, MonthlyIncome, Attrition) %>% group_by(Attrition, Department) %>%
+gg2_1 <- raw %>% select(Department, MonthlyIncome, Attrition) %>% group_by(Attrition, Department) %>%
   summarize(avg.inc=mean(MonthlyIncome)) %>%
   ggplot(aes(x=reorder(Department, avg.inc), y=avg.inc, fill=Attrition)) + geom_bar(stat="identity", position="dodge", alpha = 0.5) + facet_wrap(~Attrition) + 
   theme_minimal() + theme(axis.text.x = element_text(angle = 90), plot.title=element_text(hjust=0.8)) + 
@@ -105,7 +106,7 @@ gg2_1
 
 # 그래프2 overtime 현황별 퇴사 (gg2_2)
 
-ggplot(data, 
+ggplot(raw, 
        aes(x = OverTime, group = Attrition)) + 
   geom_bar(aes(y = ..prop.., fill = factor(..x..)), 
            stat="count", 
@@ -136,48 +137,4 @@ ggplot(data,
 #- 부서별 overtime
 #- 부서별 refresh 발생율
 #- 부서별 refresh 소진율
-
-
-
-suppressPackageStartupMessages(library(tidyverse))
-suppressPackageStartupMessages(library(ggcorrplot))
-
-options(repr.plot.width=10, repr.plot.height=7) 
-
-nums <- select_if(data, is.numeric)
-
-corr <- round(cor(nums), 1)
-
-ggcorrplot(corr, 
-           type = "lower", 
-           lab = TRUE, 
-           lab_size = 2, 
-           method="square", 
-           colors = c("tomato2", "white", "#01A9DB"), 
-           title="각 변수별 상관관계", 
-           ggtheme=theme_minimal()
-           + theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
-)
-
-
-# radar chart
-fig <- plot_ly(
-  type = 'scatterpolar',
-  r = c(39, 28, 8, 7, 28, 39),
-  theta = c('A','B','C', 'D', 'E', 'A'),
-  fill = 'toself'
-) 
-fig <- fig %>%
-  layout(
-    polar = list(
-      radialaxis = list(
-        visible = T,
-        range = c(0,100)
-      )
-    ),
-    showlegend = F
-  )
-
-fig
-
 

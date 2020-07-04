@@ -6,19 +6,19 @@ library(grid)
 library(gridExtra)
 
 # 한글깨짐 (http://blog.daum.net/pingpu/13718306)
-install.packages("extrafont")
-
-library(extrafont)
-font_import('D2')
-
-theme_set(theme_grey(base_family='NanumGothic'))
-
-theme.ti <- element_text(family="NanumGothic", face="bold", size=12) #그래프 제목 스타일 변경
-theme.ax <- element_text(family="NanumGothic", face="bold", size=10, angle=00, hjust=0.54, vjust=0.5) #그래프 축 이름 스타일 변경
-theme.leti<-element_text(family="NanumGothic", face="bold") #범례 제목 (legend) 스타일 변경, 범례가 있을 경우에만 쓰세요
-theme.lete<-element_text(family="NanumGothic") #범례 항목 (legend) 스타일 변경, 범례가 있을 경우에만 쓰세요
-
-
+#install.packages("extrafont")
+# 
+# library(extrafont)
+# font_import('D2')
+# 
+# theme_set(theme_grey(base_family='NanumGothic'))
+# 
+# theme.ti <- element_text(family="NanumGothic", face="bold", size=12) #그래프 제목 스타일 변경
+# theme.ax <- element_text(family="NanumGothic", face="bold", size=10, angle=00, hjust=0.54, vjust=0.5) #그래프 축 이름 스타일 변경
+# theme.leti<-element_text(family="NanumGothic", face="bold") #범례 제목 (legend) 스타일 변경, 범례가 있을 경우에만 쓰세요
+# theme.lete<-element_text(family="NanumGothic") #범례 항목 (legend) 스타일 변경, 범례가 있을 경우에만 쓰세요
+# 
+# 
 
 counts <- table(data$Gender)
 counts
@@ -62,7 +62,7 @@ ggplot(data=data, aes(data$Age, data$Gender)) +
                  aes(fill=..count..))+
   labs(x="연령대", y="퇴사자") +
   scale_fill_gradient("Count", low="skyblue", high="navy")
-  scale_color_steps()
+scale_color_steps()
 
 # Business Travel
 ggplot(data,aes(BusinessTravel,fill=Attrition))+geom_bar()
@@ -161,16 +161,15 @@ data_test  <- data[-idx,]
 fit_ctrl <- trainControl(method = "repeatedcv", number = 5, repeats = 3)
 
 data_rf <- train(Attrition ~ ., 
-                 data = data_train, 
+                 data = data_training, 
                  method = "rf", 
                  preProcess = c("scale", "center"),
                  trControl = fit_ctrl,
                  verbose = FALSE)
 
 ## 2.3. 모형성능평가 ------
-test_predict <- predict(data_rf, data_test)
-confusionMatrix(test_predict, data_test$Attrition)
-
+test_predict <- predict(data_rf, data_testing)
+confusionMatrix(test_predict, data_testing$Attrition)
 
 
 
@@ -196,6 +195,7 @@ data_rf_imp$importance %>%
 
 
 
+data_rf_imp
 
 
 # 2. 탐색적 데이터 분석 ------
@@ -230,7 +230,7 @@ suppressPackageStartupMessages(library(caret))
 suppressPackageStartupMessages(library(rpart.plot))
 library(ggplot2)
 suppressPackageStartupMessages(library(tree))
-
+suppressPackageStartupMessages(library(ggcorrplot))
 # 각 변수별 상관관계
 options(repr.plot.width=10, repr.plot.height=7) 
 
@@ -249,17 +249,22 @@ ggcorrplot(corr,
            + theme(axis.title = theme.ax, plot.title = theme.ti)  # 한글 폰트
 )
 
+
 library("rpart.tree")
-install.packages("rpart.tree")
+#install.packages("rpart.tree")
+#install.packages("RColorBrewer")
+library(rpart)
+library(ggplot2)
+library(tidyverse)
+library(RColorBrewer)
 
 options(repr.plot.width=10, repr.plot.height=8) 
 
-rpart.tree <- rpart(Attrition ~ ., data=data_train)
+rpart.tree <- rpart(Attrition ~ ., data=data_training)
 plot(rpart.tree, uniform=TRUE, branch=0.6, margin=0.05)
 text(rpart.tree, all=TRUE, use.n=TRUE)
-title("decision tree")
+title("의사결정트리")
 
-# Complicated DecisionTree, Is there a way to determine variable importance?
 var_imp <- data.frame(rpart.tree$variable.importance)
 var_imp$features <- rownames(var_imp)
 var_imp <- var_imp[, c(2, 1)]
@@ -267,6 +272,7 @@ var_imp$importance <- round(var_imp$rpart.tree.variable.importance, 2)
 var_imp$rpart.tree.variable.importance <- NULL
 
 colorCount <- length(unique(var_imp$features))
+
 feature_importance <- var_imp %>%
   ggplot(aes(x=reorder(features, importance), y=importance, fill=features)) + geom_bar(stat='identity') + coord_flip() + 
   theme_minimal() + theme(legend.position="none", strip.background = element_blank(), strip.text.x = element_blank(), 
@@ -281,4 +287,28 @@ feature_importance <- var_imp %>%
 
 
 feature_importance
+
+
+
+
+# Random Forest 
+data_rf_imp
+
+feature_importance <- data_rf_imp %>%
+  ggplot(aes(x=reorder(features, importance), y=importance, fill=features)) + geom_bar(stat='identity') + coord_flip() + 
+  theme_minimal() + theme(legend.position="none", strip.background = element_blank(), strip.text.x = element_blank(), 
+                          plot.title=theme.ti, plot.subtitle=element_text(color="white"), plot.background=element_rect(fill="#FFFFFF"),
+                          axis.text.x=element_text(colour="black"), axis.text.y=element_text(colour="black"),
+                          axis.title=theme.ax, 
+                          legend.background = element_rect(fill="#FFFFFF",
+                                                           size=0.5, linetype="solid", 
+                                                           colour ="black")) + scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(colorCount)) + 
+  geom_label(aes(label=importance), colour = "black", fontface = "italic", hjust=0.6) + 
+  labs(title="요인별 중요도", x="요인", y="중요도")
+
+
+feature_importance
+
+
+
 
