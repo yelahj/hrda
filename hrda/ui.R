@@ -8,7 +8,6 @@ ui <- dashboardPage(skin="blue",
                     dashboardSidebar(
                         
                         sidebarMenu(
-                            # Setting id makes input$tabs give the tabName of currently-selected tab
                             id = "tabs",
                             menuItem("법인현황", tabName = "dashboard", icon = icon("dashboard")),
                             menuItem("상관분석", icon = icon("th"), tabName = "widgets",
@@ -20,7 +19,7 @@ ui <- dashboardPage(skin="blue",
                             #menuItem("About", tabName = "about")
                             menuItem("About", 
                                      menuSubItem("프로젝트", tabName = "about"),
-                                     menuSubItem("raw", tabName = "raw")
+                                     menuSubItem("원본데이터", tabName = "raw")
                             )
                         )
                     ),

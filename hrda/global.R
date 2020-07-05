@@ -45,12 +45,12 @@ theme.ax <- element_text(family="NanumGothic", face="bold", size=10, angle=00, h
 theme.leti<-element_text(family="NanumGothic", face="bold") #범례 제목 (legend) 스타일 변경, 범례가 있을 경우에만 쓰세요
 theme.lete<-element_text(family="NanumGothic") #범례 항목 (legend) 스타일 변경, 범례가 있을 경우에만 쓰세요
 
-
-package.check <- lapply(pacotes, FUN = function(x) {
-  if (!require(x, character.only = TRUE)) {
-    install.packages(x, dependencies = TRUE)
-  }
-})
+# 
+# package.check <- lapply(pacotes, FUN = function(x) {
+#   if (!require(x, character.only = TRUE)) {
+#     install.packages(x, dependencies = TRUE)
+#   }
+# })
 
 #wp <- paste0(getwd(), "/hrda")
 #setwd(wp)
