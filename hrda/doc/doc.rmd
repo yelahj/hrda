@@ -1,130 +1,207 @@
 ---
-title: "Pre-Processing and Feature Engineering"
-author: "정혜지"
-date: "`r Sys.Date()`"
-output:
-  html_document:
-    toc: yes
-    highlight: tango
-editor_options: 
-  chunk_output_type: console
-params:
-   data_name: "data"
+layout: page
+title: [HR Report 시각화 및 퇴사율 분석]
+subtitle: "[2020 데이터 사이언스](https://statkclee.github.io/ds-intro-2020/)"
+author:  
+     name: "ITS 정혜지 PPC 이혜림"
+output: 
+ html_document:
+  theme: default
+  toc: yes
+  toc_float: true
+  highlight: tango
+  code_folding: hide
+  number_sections: TRUE
+mainfont: NanumGothic
+
 ---
 
-```{r echo=FALSE}
-knitr::read_chunk("../data/data_processing.R")
-```
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-library(skimr)
-library(knitr)
-library(tidyverse)
-```
+# Introduction of Project
+## 수업 소개
 
-## 1. 원본 데이터
+<h4>**데이터 과학이란?**</h4>
 
-  보안을 위해 실제 인사 데이터 사용이 아닌 사내에서 가용한 인사데이터 형태 기준으로 일부 가공하여 분석을 진행하였습니다.
-  
-  * 데이터 설명:
+* 데이터 과학은 데이터를 통해 실제 현상을 이해하고 분석하는 통합적 개념
+* 데이터 자원은 여러 단계를 거치면서 기존에 없던 새로운 가치를 창출
+* 경영 활동의 불확실성을 낮추고, 시각화를 통해 효율적인 의사결정을 가능하게 함
+
+<br>
+
+## 활용 툴 소개
+
+<h4>**데이터 분석 도구 R**</h4>
+
+* spreadsheet는 GUI 환경에서 데이터를 직관적으로 가공할 수 있도록 하는 도구인 반면 R은 CLI 형식임.
+* 우용하게 사용할 수 있는 기능을 담은 library가 마련되어 있어 통계학적인 부분에서 데이터 분석이 유리함.
+* 웹앱을 쉽게 배포할 수 있으며, 실무적으로 공유하기에 좋음.
+
+<br>
+
+<h4>**Tidyverse 패키지**</h4>
+
+* R의 Tidyverse 에는 일상적인 데이터 분석에 사용할 수 있는 패키지가 포함되어 있음.
+
+<img src="https://suntreeshl.github.io/suntreeshl/999205345CA914070E.png">
+
+<br>
+
+<h4>**Shiny**</h4>
+
+* 축적한 데이터의 가치를 발굴하고 이해하는 과정에 반드시 필요한 것이 시각화
+* 빠른 시간 내에 의사결정을 내릴 수 있도록 최대한 많은 정보를 제공
+* Shiny는 R에서 직접 Interactive web app 제작을 가능하게 하는 R 패키지
+* HTML, CSS 로 제작되는 웹앱을 동등하게 구현할 수 있으며 사용 방법이 간단함
+
+<br>
+
+## 주제 선정 이유
+
+
+[자세한 프로젝트개요](https://suntreeshl.github.io/suntreeshl/index.html) </center> 
+<br> 
+
+
+
+
+# Preprocessing
+
+## 원본 데이터
+
+
+* 보안 상의 사유로 사내 데이터가 아닌 IBM의 오픈 데이터를 사용함
+<br> 
+* 데이터 설명:
   - Attrition (퇴사) Yes, No로 구분되어 Yes(1) 인 경우 퇴사, No(0)인 경우 재직
   - 이 외 성별, 연령, 부서, 연봉 등 다양한 정보를 포함.
 
-``` {r message=FALSE, results='hide'}
-#source('../data/data_processing.R')
-```
 
 ```{r message=FALSE}
+library(knitr)
+library(tidyverse)
+
+ 
 
 raw <- read_csv("../data/dataset.csv")
 kable(head(raw, 10), 
-      caption = "변형 데이터")
+      caption = "원본 데이터")
+
 ```
 
+<br>
+
+## 데이터 가공 및 사용 변수
+
+
++ 해당 데이터를 사내환경에 맞춰 일부 가공
+<br> 
+ - 사내 인사데이터에 해당되지 않는 변수 삭제 (예를 들면, StockOption, MonthlyHours, DailyHours... ) 
+ - 사내 인사데이터에서 활용할 수 있는 변수 추가 (기존에 OverTime이 Yes/No 값의 범주형이 였기 때문에, Yes에 한하여 Random으로 OverTime 시간을 부여하여 OvertimeHours 생성)
+-  [부서]를 Audit / TAX / CS&DA 로 변경
+-  [통근거리] 범주화
+-  [전공] 한국어로 번역
+-  [직무]을 회사 성격에 맞도록 수정
+
+<br>
+
+``` {r  echo=FALSE}
 
  
 
 
-## 1.2. 데이터 가공 
-
-
-+ 해당 데이터를 프로그램에 사용할 기본 데이터셋의 포맷으로 지정했고, 일부 컬럼을 사내환경에 맞춰 가공
- - 사내 인사데이터에 해당되지 않는 변수 삭제 (예를 들면, StockOption, MonthlyHours, DailyHours... ) 
- - 사내 인사데이터에서 활용할 수 있는 변수 추가 (기존에 OverTime이 Yes/No 값을 가진 범주형이 였기 때문에 Yes에 한하여 Random으로 OverTime 시간을 부여하여 OvertimeHours 생성)
--  부서를 Audit / TAX / DEAL 로 변경
--  통근거리를 범주화
--  교육분야를 한국어로 변경
--  역할을 회사 성격에 맞도록 수정
-
-``` {r  echo=FALSE}
-
-
 ```
 
 
+| 변수명 | 변수의 의미 | 데이터 형태 | 가공 |
+| :----: | :---------- | :---------- | :--: | 
+|AGE|연령| 수치형 |    |
+|ATTRITION| 퇴사여부 | 범주형 |   |  
+|BUSINESS TRAVEL|출장빈도|범주형|     |
+|DEPARTMENT|Function|범주형| KPMG Data로 치환 | 
+|DISTANCE FROM HOME|통근거리|수치형| 범주형으로 치환 |
+|EDUCATION| 교육 수준| 범주형 | 
+|EDUCATION FIELD | 전공 | 범주형 | KPMG Data로 치환 |
+|EMPLOYEE COUNT | 인원수 | 수치형 | 삭제 |
+|EMPLOYEE NUMBER | 사번 | 명목형 | 
+|GENDER | 성별 | 범주형 | 
+|HOURLY RATE | 시급 | 수치형 | 삭제 |
+|JOB INVOLVEMENT | 직무몰입도 | 범주형 |
+|JOB LEVEL | 직무수준 | 범주형 |
+|JOB ROLE| 직무| 범주형 | KPMG Data로 치환 |
+|JOB SATISFACTION | 직무만족도 | 범주형 |
+|MARITAL STATUS | 결혼상태 | 범주형 |
+|MONTHY RATE | 월급 | 수치형 |
+|NUMCOMPANIES WORKED| 이직횟수 | 수치형 |
+|OVER 18| 18세 이상| 범주형 | 삭제 |
+|OVERTIME| 초과근무| 범주형 | 
+|PERCENT SALARY HIKE| 연봉인상률| 수치형 | 
+|PERFORMANCE RATING| 평가등급 | 범주형 | 
+|RELATIONS SATISFACTION| 관계만족도 | 범주형 | 
+|STANDARD HOURS| 소정근로시간 | 수치형 | 삭제 |
+|STOCK OPTIONS LEVEL| 스톡옵션 | 수치형 | 삭제 |
+|TOTAL WORKING YEARS| 경력 | 수치형 | 
+|TRAINING TIMES LAST YEAR| 교육시간 | 수치형 | 
+|WORK LIFE BALANCE| 워라밸 | 범주형 | 
+|YEARS AT COMPANY| 근속년수 | 수치형 | 
+|YEARS IN CURRENT ROLE| 직무경력 | 수치형 | 
+|YEARS SINCE LAST PROMOTION| 최종승진 이후 기간| 수치형 | 
+|YEARS WITH CURRENT MANAGER| PM과의 업무 기간 | 수치형 | 
+|YEARS WITH CURRENT MANAGER| PM과의 업무 기간 | 수치형 | 
+|OverTimeHours| 초과근무시간| 수치형 | 추가 |
+|MonthlyLeaves| 휴가사용빈도 | 수치형 | 추가 |
 
 
+<br>
 
-# 2. 탐색적 분석(Exploratory Data Analysis - EDA)
+# 탐색적 분석(Exploratory Data Analysis - EDA)
+<br>
 
 + 탐색적 분석이란, 수집한 데이터를 다양한 각도에서 관찰하고 이해하는 과정
- - 데이터의 분포/ 값을 검토하여 데이터가 어떤 특성을 지니고 있는 지 파악하였습니다. 
++ 데이터의 분포/ 값을 검토하여 데이터가 어떤 특성을 지니고 있는 지 파악
 ``` {r echo = FALSE}
+
+ 
 
 skimr::skim(raw)
 
-```
-
-
- - 분석에 사용한 데이터는 연속형 Age, 범주형 : Attrition, Department 가 모두 함께 존재하므로 이를 하나로 통일해 주는 작업이 필요했고 범주형 데이터를 숫자로 치환하여 분석 작업을 하였습니다. (TidyModels 사용)
-
-
-``` 
-data$Department <- as.numeric(as.factor(data$Department))
-data$BusinessTravel <- as.numeric(as.factor(data$BusinessTravel))
-data$EducationField <- as.numeric(as.factor(data$EducationField))
-data$Gender <- as.numeric(as.factor(data$Gender))
-data$JobRole <- as.numeric(as.factor(data$JobRole))
-data$MaritalStatus <- as.numeric(as.factor(data$MaritalStatus))
-data$DistanceFromHome <- as.numeric(as.factor(data$DistanceFromHome))
+ 
 
 ```
 
+ 
+<br>
 
- - 데이터를 분석하기 위해서 전체 데이터를 분류합니다. 
-학습용과 검증용으로 7:3 비율로 분류하여 학습용 데이터로 학습을 하고, 분류용 데이터는 학습된 것을 기반으로 각각의 값을 예측하는 역할을 합니다. 
+ - 분석에 사용한 데이터는 연속형 Age, 범주형 : Attrition, Department 가 모두 함께 존재하므로 이를 하나로 통일해 주는 작업이 필요했고 범주형 데이터를 숫자로 치환하여 분석 작업을 하였습니다. (TidyModels, caret, randomForest, xgboost 사용)
 
-```
+ 
+<br>
 
-data %>%
-  initial_split(prop=0.7) -> data_split
+## 데이터 분류 
++ 학습용, 검증용으로 7:3 비율로 분류하여 학습용 데이터로 학습을 하고, 분류용 데이터는 학습된 것을 기반으로 각각의 값을 예측
 
-data_split
-str(data_split)
+ 
+<img src="https://suntreeshl.github.io/suntreeshl/Train-Test-Data-Split.png">
 
-data_split %>%
-  training()
+## 상관변수 분석
 
-data_split %>%
-  testing()
+  1. 모든 변수 끼리의 Correlation 확인
+  2. RandomForest
+  3. XGBoost 
+  4. ROC Curve
+  5. Feature Selection
 
-data_training <- training(data_split)
-data_testing  <- testing(data_split)
-
-```
-
-
-- 분석을 통해 얻고자 하는 값은 "퇴사가능성" 이므로 기존에 퇴사한 사람들의 영향요인들을 수치화하여 Random Forest 기법으로 Attrition 값을 1과 0으로 분류하면서 이를 이분값이 아닌 확률값으로 도출하고자 했습니다. 
-
+<br>
 ``` {r echo = FALSE}
 
+ 
+
 ```
 
 
-
-+ 먼저 학습/검증용으로 분류한 데이터 중 학습 데이터를 이용하여 학습을 하고, 검증용 데이터로 예측한 값과 실제 값이 일치하는 지 확인하는 작업을 통해 Accuracy를 확인하면 다음과 같습니다.
++ 앞서 학습/검증용으로 분류한 데이터 중 학습 데이터를 이용하여 학습을 하고, 검증용 데이터로 예측한 값과 실제 값이 일치하는 지 확인하는 작업을 통해 ROC Curve 를 확인하면 다음과 같습니다.
 ``` {r echo = FALSE}
+
+ 
 
 ```
 
@@ -132,12 +209,48 @@ data_testing  <- testing(data_split)
  + 내림차 순으로 정렬해서 보면 가장 영향을 많이 미치는 요소는 아래 순서로 확인 할 수 있습니다.
 ``` {r echo = FALSE}
 
+ 
+
 ```
 
 
-EDA 분석을 통해 다음과 같은 요소들 중 영향을 많이 미치는 요소의 5가지를 그래프화 하였으며, 결과는 다음과 같습니다.
++ 두 개의 분석을 적용하였으나 결과 상에 큰 차이가 없어 RandomForest 로 모델링
+
++ EDA 분석을 통해 다음과 같은 요소들 중 영향을 많이 미치는 요소의 5가지를 그래프화 하였으며, 결과는 다음과 같습니다.
 ``` {r echo = FALSE}
 
+ 
+
 
 ```
 
+
+# Modeling
++ 모델링은 앞에서 Feature selection 한 결과로 영향력이 있는 변수 기준으로 모델을 적합화
++ RandomForest 모드로 모형화 할 때 회귀와 분류모드로 구분할 수 있으며, 분류로 채택을 하여 개인이 근속중 확률에 속하는 지를 판단하고자 함
+
++ 테스트 데이터를 예측한 후 예측 전 실제 퇴사여부 값과 비교하여 성능을 측정 ( 대략 85% )
+
++ 각 요인별로 점수를 측정하여 추후에 근속 가능성 수치를 도출하는 데 이용할 수 있을 것 같다.
+
+# Visualization
+
+
+
+# Result
+
+## 결과 분석
+## 확률 검증 프로세스
+## 느낀 점 및 추후 보완점
+
+* 프로젝트 주제 확정이 늦어지기도 했으나, 업무일정 고려하였기에 작업시간이 상대적으로 부족했던 점 
+* R을 비롯한 다양한 활용 기술(Markdown, Shiny, 통계지식..)에  익숙하지 않아 단위 테스트에서 많은 시행 착오를 겪음 
+* EDA 시 다양한 기법을 활용 및 비교하지 못한 점
+* 모델링 과정에서 성능 결과가 85% 정도 나왔는데, Class  imbalance, fit 등 성능을 높일 수 있는 방법을 활용해 보지 못한 점
+* 앱 배포
+
+## 느낀 점
+
+* 데이터 자체가 가진 유의미성을 파악하는 과정에 대한 단계를 익힐 수 있었던 것이 좋았다.
+* 데이터를 파악하는 도구로서 여러 기술을 익힐 수 있었음
+* 데이터를 예측하고 분류하면 편리해 질 수 있는 일들이 많이 있는데 앞으로 이를 잘 활용할 수 있었음 좋겠음

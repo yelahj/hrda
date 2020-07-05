@@ -4,7 +4,6 @@ library(dplyr)
 library(caret)
 library(pROC)
 library(randomForest)
-
 library(ggplot2)
 
 eda_data <- 
@@ -50,9 +49,11 @@ confusionMatrix(rftest_predict, rfdata_test$Attrition)
 ## 3.1. 중요변수 추출 -----
 data_rf_imp <- varImp(data_rf, scale = TRUE)
 
+
 (top_ten_variable_v <- data_rf_imp$importance %>%
     as.data.frame() %>%
-    rownames_to_column(var="variable") %>% 
+    rownames_to_column(var="variable") %>%
+    filter(!(variable == "EmployeeNumber")) %>%
     top_n(10, Overall) %>% 
     pull(variable))
 
@@ -134,6 +135,7 @@ rankImportance <- varImportance %>%
 xgbTopPlot <-
   rankImportance %>%
   as.data.frame() %>%
+  filter(!(Variables == "EmployeeNumber")) %>%
   #rownames_to_column(var="Variable") %>%
   ggplot(aes(x = reorder(Variables, Importance), y = Importance)) +
   geom_bar(stat = "identity", fill = "seagreen", alpha = 0.8) +
