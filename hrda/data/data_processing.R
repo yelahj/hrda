@@ -1,6 +1,7 @@
 library(tidyverse)
 library(dplyr)
 
+
 #detach("package:plyr", unload=TRUE) 
 
 # wp <- paste0(getwd(), "/hrda")
@@ -93,7 +94,7 @@ data <- data  %>%
 # 결측치를 제거한 값을 EDA에 활용
 eda_data <-
   data %>%
-  select (-"EmployeeCount", "EmployeeNumber")
+  select (-"EmployeeCount", -"EmployeeNumber")
 
 eda_data <- eda_data %>%
   mutate(Attrition = ifelse(Attrition == 1,"Yes","No"))
