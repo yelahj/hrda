@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1591547651491.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2460360207",
+    "id" : "7A552A3D",
+    "lastKnownWriteTime" : 1592148963,
+    "last_content_update" : 1592148963601,
+    "path" : "~/Project/hrda/hrda/Visualization2.R",
+    "project_path" : "hrda/Visualization2.R",
+    "properties" : {
+        "cursorPosition" : "75,0",
+        "scrollLine" : "52",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 12,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

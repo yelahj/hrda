@@ -1,63 +1,39 @@
 library(tidyverse)
 library(dplyr)
 
-# 1. IBM HR Analysis on Kaggle에서 제공하는 IBM 데이터를 활용하여 데이터를 분석합니다.
-raw <- read_csv("hrda/data/dataset.csv")
 
-view(raw)
-dim(raw)
-summary(raw)
-str(raw)
+#detach("package:plyr", unload=TRUE) 
+
+# wp <- paste0(getwd(), "/hrda")
+# setwd(wp)
+
+# 1. IBM HR Analysis on Kaggle에서 제공하는 IBM 데이터를 활용하여 데이터를 분석합니다.
+raw <- read_csv("data/dataset.csv")
 
 # 1-1. 종속변수 선정: 근속률을 예측하기 위해 퇴사 여부를 확인할 수 있는 Attrition을 종속변수로 선정. 
 #       기존 데이터의 Y/N 을 0/1 로 변경 = Attrition ( 0 = 'no', 1 = 'yes')
 #        Attrition 값을 1,0으로 변경
-raw$Attrition <- as.integer(as.character(raw$Attrition)=="Yes")
-raw$Attrition <-as.factor(raw$Attrition)
+# raw$Attrition <- as.integer(as.character(raw$Attrition)=="Yes")
+# raw$Attrition <-as.factor(raw$Attrition)
+# 
+# # gender 값을 1,0으로 변경
+# raw$Gender <- as.integer(as.character(raw$Gender)=="Female")
+# raw$Gender <-as.factor(raw$Gender)
 
-# 전체 데이터셋에 Index 변수 추가 (index)
-raw$ID <- seq.int(nrow(raw))
-
-# gender 값을 1,0으로 변경
-raw$Gender <- as.integer(as.character(raw$Gender)=="Female")
-raw$Gender <-as.factor(raw$Gender)
-
+# 
 # 삭제 변수
-drop.cols <- c("DailyRate", "EmployeeCount", "HourlyRate", "MonthlyRate", "Over18", "StockOptionLevel")
-data = 
-raw %>%
-  select (-drop.cols)
 
-# 데이터 치환
-# Departmemt Update
-table(raw$Department)
-c("Audit", "Tax", "CS&DA")
-# Distance from Home 
-table(raw$DistanceFromHome)
-# 거리: 30분 미만(1~10), 1시간 미만(11~21), 1시간 이상(22~29)
-
-# EducationField 
-table(raw$EducationField)
-c("인문학", "자연과학", "마케팅", "경제", "기타", "이공계")
-
-# JobRole
-table(raw$JobRole)
-c("감사직","컨설팅직","투자자문직", "기술컨설팅직", "세무직", "사무직", "연구직", "기술직", "영업직")
-
-# 추가 변수
-c("BirthYear", "Functions", "OverTimeHours", "MonthlyLeaves")
-
-data =
+raw <-
   raw %>%
   mutate(Department = case_when(
     Department == "Research & Development" ~ "Audit",
     Department == "Sales" ~ "Tax",
-    Department == "Human Resources" ~ "CS & DA"
+    Department == "Human Resources" ~ "CS&DA"
   )) %>% 
   mutate(DistanceFromHome = case_when(
     DistanceFromHome %in%  1:10  ~ "30분미만",
     DistanceFromHome %in%  11:20 ~ "1시간미만",
-    DistanceFromHome %in%  21:30 ~ " 1시간이상"
+    DistanceFromHome %in%  21:30 ~ "1시간이상"
   )) %>% 
   mutate(EducationField = case_when(
     EducationField == "Marketing" ~ "인문학",
@@ -74,14 +50,64 @@ data =
     JobRole == "Laboratory Technician" ~ "기술컨설팅직",
     JobRole == "Manufacturing Director" ~ "세무직",
     JobRole == "Human Resources" ~ "사무직",
-    JobRole == "Manager" ~ "연구직",
+    JobRole == "Manager" ~ "R&D",
     JobRole == "Research Director" ~ "기술직",
     JobRole == "Sales Representative" ~ "영업직"
-  )) %>% 
-  mutate(BirthYear = 2020 - Age) %>% 
+  )) 
+
+raw <-
+  raw %>% 
+  #mutate(BirthYear = 2020 - Age) %>% 
   mutate(MonthlyLeaves = sample(0:3, n(), replace = TRUE))  %>%
   mutate(OverTimeHours = ifelse(OverTime == "Yes", sample(1:52, n(), replace = TRUE), 0))
 
 
+drop.cols <- c("DailyRate", "HourlyRate", "MonthlyRate", "Over18", "StockOptionLevel", "StandardHours")
 
+raw <-
+  raw %>%
+  select (-drop.cols )
+
+
+data <- raw
+
+data$Department <- as.numeric(as.factor(data$Department))
+data$BusinessTravel <- as.numeric(as.factor(data$BusinessTravel))
+data$EducationField <- as.numeric(as.factor(data$EducationField))
+data$Gender <- as.numeric(as.factor(data$Gender))
+data$JobRole <- as.numeric(as.factor(data$JobRole))
+data$MaritalStatus <- as.numeric(as.factor(data$MaritalStatus))
+#data$OverTime <- as.numeric(as.factor(data$OverTime))
+data$DistanceFromHome <- as.numeric(as.factor(data$DistanceFromHome))
+#data$Over18 <- as.numeric(as.factor(data$Over18))
+# data$Gender <- as.numeric(data$Gender)
+# data$Gender <-as.factor(data$Gender)
+
+data <- data  %>%
+  select(-"OverTime")
+
+# eda_data <-
+#   raw %>%
+#   select (-drop.cols )
+
+
+# 결측치를 제거한 값을 EDA에 활용
+eda_data <-
+  data %>%
+  select (-"EmployeeCount", -"EmployeeNumber")
+
+eda_data <- eda_data %>%
+  mutate(Attrition = ifelse(Attrition == 1,"Yes","No"))
+
+eda_data$Attrition <- 
+  as.factor(eda_data$Attrition)
+
+#str(eda_data) 
+eda_data <- mutate_if(data, is.character, as.factor)
+
+
+
+data$Attrition <- as.numeric(as.character(data$Attrition)=="Yes")
+data$Attrition <-as.factor(data$Attrition)
+# gender 값을 1,0으로 변경
 
