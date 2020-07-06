@@ -9,138 +9,73 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Tidymodel 사용 : 랜덤포레스트 (회귀)
+ 
 
+## 1. 앞서 작업한 RandomForest 데이터를 전처리
 
--
+```
+rfdata_train$Gender <-
+  as.numeric(rfdata_train$Gender)
 
-
-# install.packages('randomForest')
+rfdata_test$Gender <-
+  as.numeric(rfdata_test$Gender)
 
 ```
 
-library(tidyverse)
-library(tidymodels)
-library(randomForest)
-library(yardstick)
+## 2. EDA 에서 추출한 변수로 예측을 한다. (영향력 없는 변수 일부를 제거)
 
-
-data %>%
-  initial_split(prop=0.7) -> data_split
-
-data_split
-
-data_split %>%
-  training()
-
-data_split %>%
-  testing()
-
-data_split %>% training() %>%
-  recipe(Attrition~
-         + Age
-         + MaritalStatus 
-         + Gender
-         + NumCompaniesWorked
-         + TotalWorkingYears
-         + JobInvolvement
-         + JobLevel
-         + JobRole
-         + MonthlyIncome
-         + OverTime
-         + PercentSalaryHike
-         + StandardHours
-         + YearsAtCompany
-         + YearsInCurrentRole
-         + YearsSinceLastPromotion
-         + TrainingTimesLastYear
-         + YearsWithCurrManager
-         + PerformanceRating
-         + JobSatisfaction
-         + RelationshipSatisfaction
-         + EnvironmentSatisfaction)
-
-# 결측치 없음..?
-sum(is.na(data))
-
-data_split %>% training() %>%
-  recipe(Attrition~
-         + Age
-         + NumCompaniesWorked
-         + TotalWorkingYears
-         + MonthlyIncome
-         + PercentSalaryHike
-         + YearsAtCompany
-         + YearsInCurrentRole
-         + PerformanceRating
-         + JobSatisfaction
-         + RelationshipSatisfaction
-         + EnvironmentSatisfaction) %>%
-  step_corr(all_predictors()) %>% # 상관관계가 지나치게 큰 변수를 제거
-  step_center(all_predictors(), -all_outcomes()) %>% # 평균을 0으로 하는 척도  
-  step_scale(all_predictors(), -all_outcomes()) %>%
-  prep() -> data_recipe
-
-select_if(data, is.numeric)
-
-data_recipe
-
-data_recipe %>%
-  bake(data_split %>% testing()) -> data_testing
-
-data_testing
-
-data_recipe %>%
-  juice() -> data_training
-
-data_training
-
-
-
-#---------------------랜덤포레스트 : 회귀 
-# mode는 회귀와 분류가 있따. 
-
-rand_forest(trees=100, mode='regression') %>%
+```
+rand_forest(trees=100, mode='classification') %>%
   set_engine('randomForest') %>%
   fit(Attrition~
       + Age
+      + DistanceFromHome
+      + Education
+      + EducationField
+      + EnvironmentSatisfaction
+      + JobInvolvement
+      + JobRole
+      + JobSatisfaction
+      + MaritalStatus
+      + MonthlyIncome          
       + NumCompaniesWorked
-      + TotalWorkingYears
-      + MonthlyIncome
       + PercentSalaryHike
+      + RelationshipSatisfaction
+      + TotalWorkingYears
+      + TrainingTimesLastYear  
+      + WorkLifeBalance
       + YearsAtCompany
       + YearsInCurrentRole
-      + PerformanceRating
-      + JobSatisfaction
-      + RelationshipSatisfaction
-      + EnvironmentSatisfaction
-    , data=data_training) -> data_rg
+      + YearsSinceLastPromotion
+      + YearsWithCurrManager
+      + MonthlyLeaves          
+      + OverTimeHours
+      , data=rfdata_train) -> data_rg
 
-data_rg
-
-result = 
-data_rg %>% 
-  predict(data_testing) %>%
-  bind_cols(data_testing)
-
-
-# bind해서 test한 데이터와 train한 데이터 비교
-data_rg %>%
-  predict(data_testing) %>%
-  bind_cols(data_testing)
-
-
-# 성능측정
-
-data_rg %>%
-  predict(data_testing) %>%
-  bind_cols(data_testing) %>%
-  metrics(truth=Attrition, estimate=.pred_res)
-
+result =
+  data_rg %>%
+  predict(rfdata_test, type="prob") %>%
+  bind_cols(rfdata_test)
 
 ```
 
+## 3. 테스트 데이터와 실제 Labeling이 되어있는 데이터와 바인딩하여 결과 값을 비교
 
- * 전처리데이터 조정 필요
- * 분류 시도?
- 
+```
+
+data_rg %>%
+  predict(rfdata_test) %>%
+  bind_cols(rfdata_test)
+
+```
+
+## 4. 성능측정 (테스트데이터)
+
+```
+
+data_rg %>%
+  predict(rfdata_test) %>%
+  bind_cols(rfdata_test) %>%
+  metrics(truth=Attrition, estimate=.pred_class)
+
+```

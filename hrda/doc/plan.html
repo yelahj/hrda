@@ -376,7 +376,7 @@ summary {
 </ol>
 <ul>
 <li>① 직원들의 입, 퇴사 기록을 다각도로 시각화하여 근속률에 영향을 미칠 수 있는 요소를 분석</li>
-<li>② 영향을 미치는 요소를 파악하여 추후 실데이터를 매핑하여법인 근속률 향상에 도움<br />
+<li>② 영향을 미치는 요소를 파악하여 추후 실데이터를 매핑하여 법인 근속률 향상에 도움<br />
 </li>
 <li>③ 퇴사 확률계산 모델을 통해 채용 변별력 및 임직원 근속률 향상을 위한 환경 개선에 도움</li>
 </ul>
@@ -400,22 +400,28 @@ summary {
 <li><p>② 데이터 분류</p>
 <ul>
 <li>구성</li>
-<li>직원 근속 현황 시각화 대시보드
+<li>법인 현황 시각화 대시보드
 <ul>
-<li>인구통계학적 특성에 따른 현황 (성별,교육 등 개인적인 요인들)</li>
-<li>소속 집단에 따른 현황 (function, department)</li>
-<li>밀레니엘 세대의 현황 (연령)</li>
-<li>만족도에 따른 현황 (인간관계 만족도, 환경만족도)</li>
-<li>라이프 스타일에 따른 현황 (결혼여부, income, 출퇴근 거리, 휴가 관련)</li>
+<li>인구통계학적 특성에 따른 현황
+<ul>
+<li>성별</li>
+<li>교육</li>
+<li>연령</li>
 </ul></li>
-<li>퇴사자 현황
+<li>소속 집단에 따른 현황
 <ul>
-<li>상관변수 추적</li>
+<li>Department</li>
+<li>Job Role</li>
 </ul></li>
-<li>퇴직에 영향을 미치는 요인 &amp; 가설
+</ul></li>
+<li>상관분석
 <ul>
-<li>상관변수를 고려한 개인별 퇴직 가능성</li>
-<li>회귀모델을 이용하여 모델링을 통한 퇴직 가능성 확인</li>
+<li>상관분석을 통한 퇴직 요인 파악</li>
+</ul></li>
+<li>시각화
+<ul>
+<li>모델링 : 분류모델(Random Forest) 모델링을 통한 퇴직 확률 도출</li>
+<li>예측 : 상위 요인 변수들을 이용해 개인별 퇴직 가능성 예측</li>
 </ul></li>
 </ul></li>
 <li><p>③ 데이터 출처</p>
@@ -424,9 +430,8 @@ summary {
 </ul></li>
 <li><p>④ 모델링</p>
 <ul>
-<li>R (tidyverse..), 웹 (Shiny ..) , Crawling 시 Python 활용 예정</li>
-<li>로지스틱 회귀분석을 이용하여 근속률에 대한 확률 도출</li>
-<li>의사결정 나무</li>
+<li>R (tidyverse..) 웹 (Shiny ..)</li>
+<li>랜덤포레스트 분류 기법을 이용하여 재직가능성 도출</li>
 <li>확률에 큰 영향을 미치는 요인 도출</li>
 </ul></li>
 </ul>
@@ -437,8 +442,7 @@ summary {
 </ol>
 <ul>
 <li>① 분석 데이터를 실제 법인데이터로 응용할 수 있는 형태로 구성 필요</li>
-<li>② 다양한 모델링 방법중 가장 적합한 방법론 탐색</li>
-<li>③ 퇴사 확률 계산하는 방법론 연구 필요</li>
+<li>② 모델 검증 필요</li>
 </ul>
 <h3>
 <ol start="5" style="list-style-type: decimal">
@@ -447,17 +451,13 @@ summary {
 </ol>
 <ul>
 <li>5월 둘째주 &gt; 주제 및 Dataset 선정 완료: 데이터 구조 분석, 프로젝트 진행방향 설계</li>
-<li>5월 넷째주 &gt; Shiny로 Dashboard 프레임 구성</li>
-<li>6월 첫째주 &gt; Dashboard prototype 완성 및 중간점검, 상관분석</li>
-<li>6월 셋째주 &gt; 데이터 분석 및 매핑</li>
-<li>6월 넷째주 &gt; 완성 및 발표 준비</li>
-<li>6월 다섯째주 &gt; 발표</li>
+<li>5월 셋째주 &gt; Data Preprocessing (전처리)</li>
+<li>5월 넷째주 &gt; EDA (Explatory Data Analysis) (탐색적분석), Shiny로 Dashboard 프레임 구성</li>
+<li>6월 첫째주 &gt; Modeling (모형화)</li>
+<li>6월 셋째주 &gt; Visualization (시각화)</li>
+<li>6월 넷째주 &gt; 발표 준비를 위한 RMD 자료 작성</li>
+<li>7월 둘째주 &gt; 발표</li>
 </ul>
-<h3>
-<ol start="6" style="list-style-type: decimal">
-<li>참고자료
-</h3></li>
-</ol>
 
 
 

@@ -1,4 +1,6 @@
 
+library(cond)
+library(ggcorrplot)
 
 # GENDER 변경.. 
 rfdata_train$Gender <- 
@@ -12,38 +14,32 @@ rfdata_test$Gender <-
 rand_forest(trees=100, mode='classification') %>%
   set_engine('randomForest') %>%
   fit(Attrition~
-      + Age
-      + BusinessTravel
-      + Department              
+        + Age
       + DistanceFromHome
       + Education
       + EducationField
       + EnvironmentSatisfaction
-      + Gender
       + JobInvolvement
-      + JobLevel                
       + JobRole
       + JobSatisfaction
       + MaritalStatus
-      + MonthlyIncome           
+      + MonthlyIncome          
       + NumCompaniesWorked
       + PercentSalaryHike
-      + PerformanceRating       
       + RelationshipSatisfaction
       + TotalWorkingYears
-      + TrainingTimesLastYear   
+      + TrainingTimesLastYear  
       + WorkLifeBalance
       + YearsAtCompany
       + YearsInCurrentRole
-      + YearsSinceLastPromotion 
+      + YearsSinceLastPromotion
       + YearsWithCurrManager
-      + MonthlyLeaves           
-      + OverTimeHours 
+      + MonthlyLeaves          
+      + OverTimeHours
       , data=rfdata_train) -> data_rg
 
-
-result = 
-  data_rg %>% 
+result =
+  data_rg %>%
   predict(rfdata_test, type="prob") %>%
   bind_cols(rfdata_test)
 

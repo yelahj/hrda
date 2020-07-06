@@ -45,10 +45,12 @@ shinyServer(function(input, output) {
   
   output$genderPlot <- renderEcharts4r({
     if (input$Attrition != "All") {
-      raw <- data[raw$Attrition == input$Attrition]
+      genraw <- raw[raw$Attrition == "Yes",]
+    } else {
+      genraw <- raw
     }
     
-    gender2 <- table(raw$Gender)
+    gender2 <- table(genraw$Gender)
     gdpct <- round(gender2/sum(gender2)*100,2)
     
     gender3 <- data.frame(gdpct)
@@ -70,13 +72,13 @@ shinyServer(function(input, output) {
       e_color(color = c('#69cce6','#A9A9A9')) %>%
       e_pictorial(Freq, symbol = path, z=10, name= '실데이터', 
                   symbolBoundingData= 100, symbolClip= TRUE) %>% 
-      e_pictorial(Freq, symbol = path, name= 'background', 
+      e_pictorial(Freq, symbol = path, name= '전체', 
                   symbolBoundingData= 100) %>% 
       e_labels(position = "bottom", offset= c(0, 10), 
                textStyle =list(fontSize= 20, fontFamily= 'Arial', 
                                fontWeight ='bold', 
                                color= '#69cce6'),
-               formatter="{@[1]}% {@[0]}") %>%
+               formatter="{@[1]}%") %>%
       e_legend(show = TRUE) %>%
       e_theme("westeros")
   })
@@ -279,24 +281,24 @@ shinyServer(function(input, output) {
 
   })
   
-  output$ggTop5 <- renderPlot({
-    
-    source('Visualization.R',local=TRUE, encoding="utf-8")
-    
-  })    
+  # output$ggTop5 <- renderPlot({
+  #   
+  #   source('Visualization.R',local=TRUE, encoding="utf-8")
+  #   
+  # })    
   
   
-  output$rfTop <- renderPlot({
-    
-    source('Visualization.R',local=TRUE, encoding="utf-8")
-    
-  }) 
+  # output$rfTop <- renderPlot({
+  #   
+  #   source('Visualization.R',local=TRUE, encoding="utf-8")
+  #   
+  # }) 
   
-  output$xgbTop <- renderPlot({
-    
-    source('Visualization.R',local=TRUE, encoding="utf-8")
-    
-  }) 
+  # output$xgbTop <- renderPlot({
+  #   
+  #   source('Visualization.R',local=TRUE, encoding="utf-8")
+  #   
+  # }) 
   
   
   selectedData1 <- reactive({
@@ -314,8 +316,8 @@ shinyServer(function(input, output) {
     sc <- x.scaled %>% 
       filter(result.EmployeeNumber == input$empno )
 
-    sc <-
-      sc %>% select(-"result.EmployeeNumber", -"EmployeeNumber")      
+     sc <-
+       sc %>% select(-"result.EmployeeNumber")      
     
     sc.pivot <- gather(sc, var, value) 
     
@@ -364,8 +366,8 @@ shinyServer(function(input, output) {
     sc <- x.scaled %>% 
       filter(result.EmployeeNumber == input$empno )
 
-    sc <-
-      sc %>% select(-"result.EmployeeNumber", -"EmployeeNumber")    
+    # sc <-
+    #   sc %>% select(-"result.EmployeeNumber", -"EmployeeNumber")    
         
     #library(tidyr)
     sc.pivot <- gather(sc, var, value)
@@ -380,7 +382,7 @@ shinyServer(function(input, output) {
       select("EmployeeNumber", top_ten_variable_v) %>%
       filter(EmployeeNumber == input$empno )
     
-    sc_tb <- gather(sc_tb, 변수, 점수)
+    sc_tb <- gather(sc_tb, 변수, 실제값)
     formattable(sc_tb, list())
   })
   
@@ -405,11 +407,72 @@ shinyServer(function(input, output) {
 
   })
   
+  ###Visualize
+  output$ggTop5 <- renderPlot({
+    
+    p1 <-  ggplot(raw,aes(MonthlyIncome, fill=Attrition))+geom_density(alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))
+    p2 <-  ggplot(raw,aes(OverTimeHours, fill = Attrition))+geom_density(alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))
+    p3 <-  ggplot(raw,aes(Age, fill=Attrition))+geom_bar(alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))
+    p4 <-  ggplot(raw,aes(TotalWorkingYears, fill=Attrition))+geom_bar(alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))
+    p5 <-  ggplot(raw,aes(NumCompaniesWorked, fill = Attrition))+geom_bar(alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))
+    
+    grid.arrange(p1, p2, p3, p4, p5, nrow = 2)
+    
+  })  
+  
+  output$rfTop <- renderPlot({
+    
+    rfTopPlot
+    
+  }) 
+  
+  output$xgbTop <- renderPlot({
+    
+    xgbTopPlot
+    
+  }) 
+  
+  
+  output$roc_rf <- renderPlot({
+    
+    
+    plot.roc(as.numeric(rfdata_test$Attrition),as.numeric(rftest_predict),lwd=2, type="b", print.auc=TRUE,col ="steelblue")
+    
+    # rocComp <- 
+    # ggplot() + 
+    #   geom_roc(aes(d = as.numeric(rfdata_test$Attrition), m = as.numeric(rftest_predict), color="RandomForest"), rfdata_test) + 
+    #   geom_roc(aes(d = as.numeric(xgbdata_test$Attrition), m = as.numeric(xgbPredict), color="XGBoost"), xgbdata_test) + 
+    #   scale_color_manual(values=c("RandomForest"="steelblue", "XGBoost"="seagreen"), 
+    #                      name="ROC Curve", guide="legend") + 
+    #   style_roc()
+    # rocComp
+    
+    
+  }) 
+  
+  
+  output$roc_xgb <- renderPlot({
+    
+    
+    plot.roc(as.numeric(xgbdata_test$Attrition),as.numeric(xgbPredict),lwd=2, type="b", print.auc=TRUE,col ="seagreen")
+    
+    
+  }) 
+  
+  
+  output$sc = DT::renderDataTable({
+    sc <- x.scaled %>% 
+      filter(data.EmployeeNumber == input$empno )
+    sc
+  })
+  ###
+  
+  
   # Datatable
   output$table <- DT::renderDataTable(DT::datatable({
     raw <- raw #read_csv("data/dataset.csv") 
     if (input$att != "All") {
-      raw <- data[raw$Attrition == input$att,]
+      raw <- raw[raw$Attrition == input$att,]
     }
     raw
   }))

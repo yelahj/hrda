@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Hyeji J" />
+<meta name="author" content />
 
 
 <title>RandomForest</title>
@@ -363,144 +363,71 @@ summary {
 
 
 <h1 class="title toc-ignore">RandomForest</h1>
-<h4 class="author">Hyeji J</h4>
 <h4 class="date">2020 6 6</h4>
 
 </div>
 
 
-<div id="tidymodel-사용-랜덤포레스트-회귀" class="section level2">
-<h2>Tidymodel 사용 : 랜덤포레스트 (회귀)</h2>
-<ul>
-<li></li>
-</ul>
+<div id="앞서-작업한-randomforest-데이터를-전처리" class="section level2">
+<h2>1. 앞서 작업한 RandomForest 데이터를 전처리</h2>
+<pre><code>rfdata_train$Gender &lt;-
+  as.numeric(rfdata_train$Gender)
+
+rfdata_test$Gender &lt;-
+  as.numeric(rfdata_test$Gender)
+</code></pre>
 </div>
-<div id="install.packagesrandomforest" class="section level1">
-<h1>install.packages(‘randomForest’)</h1>
-<pre><code>
-library(tidyverse)
-library(tidymodels)
-library(randomForest)
-library(yardstick)
-
-
-data %&gt;%
-  initial_split(prop=0.7) -&gt; data_split
-
-data_split
-
-data_split %&gt;%
-  training()
-
-data_split %&gt;%
-  testing()
-
-data_split %&gt;% training() %&gt;%
-  recipe(Attrition~
-         + Age
-         + MaritalStatus 
-         + Gender
-         + NumCompaniesWorked
-         + TotalWorkingYears
-         + JobInvolvement
-         + JobLevel
-         + JobRole
-         + MonthlyIncome
-         + OverTime
-         + PercentSalaryHike
-         + StandardHours
-         + YearsAtCompany
-         + YearsInCurrentRole
-         + YearsSinceLastPromotion
-         + TrainingTimesLastYear
-         + YearsWithCurrManager
-         + PerformanceRating
-         + JobSatisfaction
-         + RelationshipSatisfaction
-         + EnvironmentSatisfaction)
-
-# 결측치 없음..?
-sum(is.na(data))
-
-data_split %&gt;% training() %&gt;%
-  recipe(Attrition~
-         + Age
-         + NumCompaniesWorked
-         + TotalWorkingYears
-         + MonthlyIncome
-         + PercentSalaryHike
-         + YearsAtCompany
-         + YearsInCurrentRole
-         + PerformanceRating
-         + JobSatisfaction
-         + RelationshipSatisfaction
-         + EnvironmentSatisfaction) %&gt;%
-  step_corr(all_predictors()) %&gt;% # 상관관계가 지나치게 큰 변수를 제거
-  step_center(all_predictors(), -all_outcomes()) %&gt;% # 평균을 0으로 하는 척도  
-  step_scale(all_predictors(), -all_outcomes()) %&gt;%
-  prep() -&gt; data_recipe
-
-select_if(data, is.numeric)
-
-data_recipe
-
-data_recipe %&gt;%
-  bake(data_split %&gt;% testing()) -&gt; data_testing
-
-data_testing
-
-data_recipe %&gt;%
-  juice() -&gt; data_training
-
-data_training
-
-
-
-#---------------------랜덤포레스트 : 회귀 
-# mode는 회귀와 분류가 있따. 
-
-rand_forest(trees=100, mode=&#39;regression&#39;) %&gt;%
-  set_engine(&#39;randomForest&#39;) %&gt;%
+<div id="eda-에서-추출한-변수로-예측을-한다.-영향력-없는-변수-일부를-제거" class="section level2">
+<h2>2. EDA 에서 추출한 변수로 예측을 한다. (영향력 없는 변수 일부를 제거)</h2>
+<pre><code>rand_forest(trees=100, mode='classification') %&gt;%
+  set_engine('randomForest') %&gt;%
   fit(Attrition~
       + Age
+      + DistanceFromHome
+      + Education
+      + EducationField
+      + EnvironmentSatisfaction
+      + JobInvolvement
+      + JobRole
+      + JobSatisfaction
+      + MaritalStatus
+      + MonthlyIncome          
       + NumCompaniesWorked
-      + TotalWorkingYears
-      + MonthlyIncome
       + PercentSalaryHike
+      + RelationshipSatisfaction
+      + TotalWorkingYears
+      + TrainingTimesLastYear  
+      + WorkLifeBalance
       + YearsAtCompany
       + YearsInCurrentRole
-      + PerformanceRating
-      + JobSatisfaction
-      + RelationshipSatisfaction
-      + EnvironmentSatisfaction
-    , data=data_training) -&gt; data_rg
+      + YearsSinceLastPromotion
+      + YearsWithCurrManager
+      + MonthlyLeaves          
+      #+ OverTimeHours
+      , data=rfdata_train) -&gt; data_rg
 
-data_rg
-
-result = 
-data_rg %&gt;% 
-  predict(data_testing) %&gt;%
-  bind_cols(data_testing)
-
-
-# bind해서 test한 데이터와 train한 데이터 비교
-data_rg %&gt;%
-  predict(data_testing) %&gt;%
-  bind_cols(data_testing)
-
-
-# 성능측정
-
-data_rg %&gt;%
-  predict(data_testing) %&gt;%
-  bind_cols(data_testing) %&gt;%
-  metrics(truth=Attrition, estimate=.pred_res)
-
+result =
+  data_rg %&gt;%
+  predict(rfdata_test, type=&quot;prob&quot;) %&gt;%
+  bind_cols(rfdata_test)
 </code></pre>
-<ul>
-<li>전처리데이터 조정 필요</li>
-<li>분류 시도?</li>
-</ul>
+</div>
+<div id="테스트-데이터와-실제-labeling이-되어있는-데이터와-바인딩하여-결과-값을-비교" class="section level2">
+<h2>3. 테스트 데이터와 실제 Labeling이 되어있는 데이터와 바인딩하여 결과 값을 비교</h2>
+<pre><code>
+data_rg %&gt;%
+  predict(rfdata_test) %&gt;%
+  bind_cols(rfdata_test)
+</code></pre>
+</div>
+<div id="성능측정-테스트데이터" class="section level2">
+<h2>4. 성능측정 (테스트데이터)</h2>
+<pre><code>
+data_rg %&gt;%
+  predict(rfdata_test) %&gt;%
+  bind_cols(rfdata_test) %&gt;%
+  metrics(truth=Attrition, estimate=.pred_class)
+</code></pre>
 </div>
 
 

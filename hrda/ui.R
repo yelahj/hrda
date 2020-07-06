@@ -52,7 +52,6 @@ ui <- dashboardPage(skin="blue",
                                         
                                     ),
                                     tabBox(
-                                        title = "1",
                                         id = "2", width = "800",
                                         tabPanel(
                                             fluidRow(
@@ -60,7 +59,7 @@ ui <- dashboardPage(skin="blue",
                                                 selectInput("Attrition",label = "퇴사여부", choices = c("All","Yes","No"), selected = "All"),
                                                 
                                                 box( 
-                                                    title = "근속상태" 
+                                                    title = "재직상태" 
                                                     ,status = "primary" 
                                                     ,width = 3
                                                     ,solidHeader = TRUE  
@@ -77,7 +76,7 @@ ui <- dashboardPage(skin="blue",
                                                     ,echarts4rOutput("genderPlot")),
                                                 
                                                 box( 
-                                                    title = "전공분야" 
+                                                    title = "전공" 
                                                     ,status = "primary" 
                                                     ,width = 3
                                                     ,solidHeader = TRUE  
@@ -86,7 +85,7 @@ ui <- dashboardPage(skin="blue",
                                                 
                                                 
                                                 box( 
-                                                    title = "업무구분" 
+                                                    title = "직무" 
                                                     ,status = "primary" 
                                                     ,width = 3
                                                     ,solidHeader = TRUE  
@@ -112,7 +111,7 @@ ui <- dashboardPage(skin="blue",
                                                 
                                                 
                                                 box( 
-                                                    title = "연령분포도" 
+                                                    title = "부서별 성별/연령 분포도" 
                                                     ,status = "primary" 
                                                     ,width = 3
                                                     ,solidHeader = TRUE  
@@ -156,7 +155,9 @@ ui <- dashboardPage(skin="blue",
                                                  )),
                                         tabPanel("ROC비교 & Feature Selection",
                                                  h3("ROC"),
+                                                 p("RandomForest vs XGBoost"),
                                                  fluidRow(
+
                                                    column(5, plotOutput("roc_rf")),
                                                    column(5, plotOutput("roc_xgb")),
                                                  ),

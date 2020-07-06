@@ -4,8 +4,9 @@ library(dplyr)
 library(caret)
 library(pROC)
 library(randomForest)
-
 library(ggplot2)
+library(cond)
+library(xgboost)
 
 eda_data <- 
   data 
@@ -31,7 +32,7 @@ rfdata_test  <- eda_data[-idx,]
 
 
 ## 2.2. 모형적합 ------
-fit_ctrl <- trainControl(method = "repeatedcv", number = 5, repeats = 3)
+fit_ctrl <- trainControl(method = "repeatedcv", number = 3, repeats = 2)
 
 data_rf <- train(Attrition ~ ., 
                  data = rfdata_train, 
@@ -53,6 +54,7 @@ data_rf_imp <- varImp(data_rf, scale = TRUE)
 (top_ten_variable_v <- data_rf_imp$importance %>%
     as.data.frame() %>%
     rownames_to_column(var="variable") %>% 
+    filter(!(variable == "EmployeeNumber")) %>%
     top_n(10, Overall) %>% 
     pull(variable))
 
@@ -61,6 +63,7 @@ rfTopPlot <-
   data_rf_imp$importance %>%
   as.data.frame() %>%
   rownames_to_column(var="variable") %>%
+  filter(!(variable == "EmployeeNumber")) %>%
   ggplot(aes(x = reorder(variable, Overall), y = Overall)) +
   geom_bar(stat = "identity", fill = "#1F77B4", alpha = 0.8) +
   coord_flip() +
@@ -134,6 +137,7 @@ rankImportance <- varImportance %>%
 xgbTopPlot <-
   rankImportance %>%
   as.data.frame() %>%
+  filter(!(Variables == "EmployeeNumber")) %>%
   #rownames_to_column(var="Variable") %>%
   ggplot(aes(x = reorder(Variables, Importance), y = Importance)) +
   geom_bar(stat = "identity", fill = "seagreen", alpha = 0.8) +

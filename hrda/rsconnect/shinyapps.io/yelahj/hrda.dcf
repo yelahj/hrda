@@ -5,9 +5,9 @@ account: yelahj
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2536448
-bundleId: 3352101
+bundleId: 3358020
 url: https://yelahj.shinyapps.io/hrda/
-when: 1593886604.23578
+when: 1594044231.15457
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: figure.png|Modeling.R|Process.R|RandomForest.R|rf_eda.R|server_??????.R|text.txt|ui_??????.R|vis1.R|Visualization.R|Visualization1.R|Visualization2.R|Visualization3.R|data/dashboard.R|data/data_refined.csv|data/eda_processing.R|www/custom.css|doc
+ignoredFiles: figure.png|text.txt|Visualization.R|data/data_refined.csv

@@ -5,63 +5,64 @@ date: '2020 4 20 '
 output: html_document
 ---
  
-<h3> 1.	개발 개요/목적/효과 (Outline of the Development / Objective / Effectiveness) </h3>
-* ①	직원들의 입, 퇴사 기록을 다각도로 시각화하여 근속률에 영향을 미칠 수 있는 요소를 분석 
-* ②	영향을 미치는 요소를 파악하여 추후 실데이터를 매핑하여법인 근속률 향상에 도움  
-* ③	퇴사 확률계산 모델을 통해 채용 변별력 및 임직원 근속률 향상을 위한 환경 개선에 도움 
-  
-<h3> 2.	Application Owner & 사용대상자(Target User) </h3>
-* ①	Application Owner : PPC & ITS  
-* ②	Target User : All user 
+<h3> 1. 개발 개요/목적/효과 (Outline of the Development / Objective / Effectiveness) </h3>
+* ① 직원들의 입, 퇴사 기록을 다각도로 시각화하여 근속률에 영향을 미칠 수 있는 요소를 분석
+* ② 영향을 미치는 요소를 파악하여 추후 실데이터를 매핑하여 법인 근속률 향상에 도움  
+* ③ 퇴사 확률계산 모델을 통해 채용 변별력 및 임직원 근속률 향상을 위한 환경 개선에 도움
+ 
+<h3> 2. Application Owner & 사용대상자(Target User) </h3>
+* ① Application Owner : PPC & ITS  
+* ② Target User : All user
 
-<h3> 3.	시스템 설명 및 요구 사항 (System Description & Requirement) </h3>
-* ①	개발 형태 – Report 형식의 Dashboard 
-* ②	데이터 분류 
+<h3> 3. 시스템 설명 및 요구 사항 (System Description & Requirement) </h3>
+* ① 개발 형태 – Report 형식의 Dashboard
+* ② 데이터 분류
 
 
   + 구성
-  * 직원 근속 현황 시각화 대시보드
-      - 인구통계학적 특성에 따른 현황 (성별,교육 등 개인적인 요인들)
-      - 소속 집단에 따른 현황 (function, department)
-      -	밀레니엘 세대의 현황 (연령)
-      - 만족도에 따른 현황 (인간관계 만족도, 환경만족도)
-      - 라이프 스타일에 따른 현황 (결혼여부, income, 출퇴근 거리, 휴가 관련)
-      
-  + 퇴사자 현황
-      - 상관변수 추적
+  * 법인 현황 시각화 대시보드
+      - 인구통계학적 특성에 따른 현황
+         -  성별
+         -  교육
+         -  연령
+      - 소속 집단에 따른 현황
+         -  Department
+         -  Job Role
+ 
+     
+  + 상관분석
+      - 상관분석을 통한 퇴직 요인 파악
 
-  + 퇴직에 영향을 미치는 요인 & 가설
-      - 상관변수를 고려한 개인별 퇴직 가능성
-      - 회귀모델을 이용하여 모델링을 통한 퇴직 가능성 확인
+  + 시각화
+      - 모델링 : 분류모델(Random Forest) 모델링을 통한 퇴직 확률 도출
+      - 예측   : 상위 요인 변수들을 이용해 개인별 퇴직 가능성 예측
 
 
-* ③	데이터 출처
+* ③ 데이터 출처
 
   * IBS HR Analysis data from Kaggle : 추후 활용을 위하여 법인 데이터 특성에 맞도록 일부 가공
 
-* ④	모델링
+* ④ 모델링
 
-  +  R (tidyverse..), 웹 (Shiny ..) , Crawling 시 Python 활용 예정
-   * 로지스틱 회귀분석을 이용하여 근속률에 대한 확률 도출
-   * 의사결정 나무 
+  +  R (tidyverse..) 웹 (Shiny ..)
+   * 랜덤포레스트 분류 기법을 이용하여 재직가능성 도출
    * 확률에 큰 영향을 미치는 요인 도출
 
 
 
-<h3> 4.	업무 프로세스 및 개발 관점에서 고려사항(Consideration from Business Process and Development’s View) </h3>
+<h3> 4. 업무 프로세스 및 개발 관점에서 고려사항(Consideration from Business Process and Development’s View) </h3>
 
-* ①	분석 데이터를 실제 법인데이터로 응용할 수 있는 형태로 구성 필요
-* ②	다양한 모델링 방법중 가장 적합한 방법론 탐색
-* ③	퇴사 확률 계산하는 방법론 연구 필요
+* ① 분석 데이터를 실제 법인데이터로 응용할 수 있는 형태로 구성 필요
+* ② 모델 검증 필요
 
 
 <h3> 5.  작업 계획 </h3>
 
  - 5월 둘째주 > 주제 및 Dataset 선정 완료: 데이터 구조 분석, 프로젝트 진행방향 설계
- - 5월 넷째주 > Shiny로 Dashboard 프레임 구성 
- - 6월 첫째주 > Dashboard 틀 완성 및 중간점검, 상관분석 
- - 6월 셋째주 > 데이터 분석 및 매핑
- - 6월 넷째주 > 완성 및 발표 준비 
- - 6월 다섯째주 > 발표
-
-<h3> 6.  참고자료 </h3>
+ - 5월 셋째주 > Data Preprocessing (전처리)
+ - 5월 넷째주 > EDA (Explatory Data Analysis) (탐색적분석),
+                Shiny로 Dashboard 프레임 구성
+ - 6월 첫째주 > Modeling (모형화)
+ - 6월 셋째주 > Visualization (시각화)
+ - 6월 넷째주 > 발표 준비를 위한 RMD 자료 작성
+ - 7월 둘째주 > 발표

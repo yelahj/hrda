@@ -2,6 +2,7 @@
 # DATA PROCESSING
 library(tidyverse)
 library(dplyr)
+library(rsconnect)
 
 # Random Forest
 library(tidyverse)
@@ -16,7 +17,7 @@ library(caret)
 library(janitor)
 library(ggridges)
 library(ggthemes)
-library(cowplot)
+#library(cowplot)
 library(corrplot)
 library(corrr)
 library(plotly)
@@ -26,6 +27,22 @@ library(formattable)
 library(ggcorrplot)
 library(shinydashboard)
 library(shinythemes)
+library(e1071)
+library(cond)
+library(echarts4r)
+library(echarts4r.assets)
+library(RColorBrewer)
+library(ggcorrplot)
+library(DT)
+library(corrplot)
+library(extrafont)
+library(plotly)
+library(ggpubr)
+library(shinycssloaders)
+library(magrittr)
+library(hrbrthemes)
+library(GGally)
+library(gridExtra)
 
 # SHINY
 pacotes = c("shiny", "shinydashboard", "shinythemes", "plotly", "shinycssloaders","tidyverse",
@@ -36,7 +53,6 @@ pacotes = c("shiny", "shinydashboard", "shinythemes", "plotly", "shinycssloaders
 
 
 #font_add_google("Nanum Gothic", "nanumgothic")
-# install.packages('randomForest')
 
 theme_set(theme_grey(base_family='NanumGothic'))
 
@@ -45,15 +61,6 @@ theme.ax <- element_text(family="NanumGothic", face="bold", size=10, angle=00, h
 theme.leti<-element_text(family="NanumGothic", face="bold") #범례 제목 (legend) 스타일 변경, 범례가 있을 경우에만 쓰세요
 theme.lete<-element_text(family="NanumGothic") #범례 항목 (legend) 스타일 변경, 범례가 있을 경우에만 쓰세요
 
-
-package.check <- lapply(pacotes, FUN = function(x) {
-  if (!require(x, character.only = TRUE)) {
-    install.packages(x, dependencies = TRUE)
-  }
-})
-
-#wp <- paste0(getwd(), "/hrda")
-#setwd(wp)
 
 source('data/data_processing.R',local=TRUE, encoding="utf-8")
 source('eda.R',local=TRUE, encoding="utf-8")
