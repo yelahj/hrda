@@ -86,7 +86,7 @@ XGBNewPlot <- plot.roc (as.numeric(BLtest.Data$Attrition), as.numeric(XGBNewPrd)
 
 # plot(xgbPredict)
 NewResult =
-  XGB.model %>%
+  xgbModel %>%
   predict(xgbdata_test, type="prob") %>%
   bind_cols(xgbdata_test)
 

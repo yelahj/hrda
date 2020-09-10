@@ -102,13 +102,13 @@ xgbdata_test <- xgb_data[-indexes,]
 
 formula = Attrition~.
 #levels(eda_data$Attrition) <- make.names(levels(factor(eda_data$Attrition)))
-fitControl <- trainControl(method="cv", number = 3, classProbs = TRUE)
+fitControl <- trainControl(method="repeatedcv", number = 5, repeats = 2, classProbs = TRUE)
 
-xgbGrid <- expand.grid(nrounds = 50,
-                       max_depth = 20,
-                       eta = .03,
-                       gamma = 0.01,
-                       colsample_bytree = .7,
+xgbGrid <- expand.grid(nrounds = 100,
+                       max_depth = 7,
+                       eta = 0.01,
+                       gamma = 1,
+                       colsample_bytree = 1,
                        min_child_weight = 1,
                        subsample = 0.9
 )
@@ -117,7 +117,7 @@ xgbModel <- train(formula, data = xgbdata_train,
                    method = "xgbTree"
                    ,trControl = fitControl
                    ,verbose=0
-                   ,maximize=FALSE
+                   ,maximize=TRUE
                    ,tuneGrid = xgbGrid
 )
 

@@ -431,16 +431,17 @@ shinyServer(function(input, output) {
   ###Visualize
   output$ggTop5 <- renderPlot({
     
-    p1 <-  ggplot(raw,aes(OverTimeHours, fill=Attrition))+geom_density(color=NA,alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2")) +  theme(legend.position="none")
-    p2 <-  ggplot(raw,aes(JobLevel, fill = Attrition))+geom_density(color=NA, alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2")) +  theme(legend.position="none")
-    p3 <-  ggplot(raw,aes(MaritalStatus, fill=Attrition))+geom_bar(alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2")) +  theme(legend.position="none")
-    p4 <-  ggplot(raw,aes(Age, fill=Attrition))+geom_bar(alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2")) +  theme(legend.position="none")+  theme(legend.position="none")
-    p5 <-  ggplot(raw,aes(MonthlyIncome, fill = Attrition))+geom_density(color=NA,alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
-    p6 <-  ggplot(raw,aes(JobSatisfaction, fill = Attrition))+geom_density(color=NA,alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
-    p7 <-  ggplot(raw,aes(EnvironmentSatisfaction, fill = Attrition))+geom_density(color=NA,alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
-    p8 <-  ggplot(raw,aes(YearsWithCurrManager, fill = Attrition))+geom_density(color=NA,alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
-    p9 <-  ggplot(raw,aes(EducationField, fill = Attrition))+geom_bar(alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
-    p10 <-  ggplot(raw,aes(JobRole, fill = Attrition))+geom_bar(alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))
+    
+    p1 <-  ggplot(raw,aes(OverTimeHours, fill=Attrition))+geom_density(color=NA,alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2")) 
+    p2 <-  ggplot(raw,aes(MonthlyIncome, fill = Attrition))+geom_density(color=NA,alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
+    p3 <-  ggplot(raw,aes(Age, fill=Attrition))+geom_bar(alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2")) +  theme(legend.position="none")+  theme(legend.position="none")
+    p4 <-  ggplot(raw,aes(MaritalStatus, fill=Attrition))+geom_bar(alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2")) +  theme(legend.position="none")
+    p5 <-  ggplot(raw,aes(EnvironmentSatisfaction, fill = Attrition))+geom_density(color=NA,alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
+    p6 <-  ggplot(raw,aes(JobLevel, fill = Attrition))+geom_density(color=NA, alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2")) +  theme(legend.position="none")
+    p7 <-  ggplot(raw,aes(YearsSinceLastPromotion, fill = Attrition))+geom_density(color=NA,alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
+    p8 <-  ggplot(raw,aes(EducationField, fill = Attrition))+geom_bar(alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none") + theme(text=element_text(size=10, family ="NanumGothic"))
+    p9 <-  ggplot(raw,aes(YearsAtCompany, fill = Attrition))+geom_density(color=NA,alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
+    p10 <-  ggplot(raw,aes(TotalWorkingYears, fill = Attrition))+geom_bar(alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2")) +  theme(legend.position="none") 
     
     grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, nrow = 4)
     

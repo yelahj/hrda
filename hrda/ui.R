@@ -13,8 +13,7 @@ ui <- dashboardPage(skin="blue",
                             menuItem("상관분석", icon = icon("th"), tabName = "widgets",
                                      badgeColor = "green"),
                             menuItem("시각화", icon = icon("bar-chart-o"),
-                                     menuSubItem("모델링", tabName = "visitem1"),
-                                     menuSubItem("예측", tabName = "visitem2")
+                                     menuSubItem("근속률 예측", tabName = "visitem2")
                             ),
                             #menuItem("About", tabName = "about")
                             menuItem("About", 
