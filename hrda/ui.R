@@ -8,7 +8,6 @@ ui <- dashboardPage(skin="blue",
                     dashboardSidebar(
                         
                         sidebarMenu(
-                            # Setting id makes input$tabs give the tabName of currently-selected tab
                             id = "tabs",
                             menuItem("법인현황", tabName = "dashboard", icon = icon("dashboard")),
                             menuItem("상관분석", icon = icon("th"), tabName = "widgets",
@@ -20,7 +19,7 @@ ui <- dashboardPage(skin="blue",
                             #menuItem("About", tabName = "about")
                             menuItem("About", 
                                      menuSubItem("프로젝트", tabName = "about"),
-                                     menuSubItem("raw", tabName = "raw")
+                                     menuSubItem("원본데이터", tabName = "raw")
                             )
                         )
                     ),
@@ -134,7 +133,7 @@ ui <- dashboardPage(skin="blue",
                             tabItem(tabName = "widgets",
                                     tabBox(
                                         title = "Explatory Data Analysis",
-                                        id = "tabset1", width="300",
+                                        id = "tabset1", width="300", height="1000",
                                         tabPanel("변수 살펴보기", 
                                                  h3("각 요인별 영향력"),
                                                  p("Heatmap을 통해 살펴본 Correlation"),
@@ -142,17 +141,16 @@ ui <- dashboardPage(skin="blue",
                                                      column(10, plotOutput("gg1_3"))
                                                  ),
                                                  ),
-                                        tabPanel("Random Forest & XGBoost", 
-                                                 h3("1. Random Forest를 통해 살펴본 중요도 변수"),
-                                                 p("상위 요인"),
+                                        tabPanel("모델비교", 
+                                                 h3("* Random Forest & XGBoost & XGBoost(Class Imbalance) 통해 살펴본 중요도 변수"),
+                                                 h4("각각의 모델 별로 상위요인이 상이함을 확인 가능"),
                                                  fluidRow(
-                                                   column(10, plotOutput("rfTop"))
-                                                 ),
-                                                 h3("2. XGBoost를 통해 살펴본 중요도 변수"),
-                                                 p("상위 요인"),
-                                                 fluidRow(
-                                                  column(10, plotOutput("xgbTop"))
-                                                 )),
+                                                   
+                                                   column(5, plotOutput("rfTop")),
+                                                   column(5, plotOutput("xgbTop")),
+                                                   column(5, plotOutput("xgbNewTop")),
+                                                   
+                                                 ), height=1200),
                                         tabPanel("ROC비교 & Feature Selection",
                                                  h3("ROC"),
                                                  p("RandomForest vs XGBoost"),
@@ -160,11 +158,14 @@ ui <- dashboardPage(skin="blue",
 
                                                    column(5, plotOutput("roc_rf")),
                                                    column(5, plotOutput("roc_xgb")),
-                                                 ),
-                                                 h3("모델링 채택변수"),
+                                                   column(5, plotOutput("roc_imb"))
+                                                 )),
+                                        tabPanel("모델링 채택변수",
+                                                 h3("XGBoost 상위변수 TOP 10"),
                                                  fluidRow(
-                                                   column(10, plotOutput("ggTop5"))
-                                                 ))
+                                                   column(10, plotOutput("ggTop5", width=950, height=800)) 
+                                                 )
+                                                 )
                                     )
                             ),
                             tabItem(tabName = "visitem1",
@@ -179,7 +180,7 @@ ui <- dashboardPage(skin="blue",
                                         selectInput(
                                           "empno",
                                           label = h3("사번을 선택하세요."),
-                                          choices = unique(as.character(x.scaled$result.EmployeeNumber))
+                                          choices = unique(as.numeric(x.scaled$NewResult.EmployeeNumber))
                                         ),
                                         # actionButton("submit", "조회"),
                                         
@@ -191,7 +192,8 @@ ui <- dashboardPage(skin="blue",
                                             column(width = 10,
                                               valueBoxOutput("attritionrate", width = 12),
                                               column(12, plotlyOutput("radar")),
-                                              column(12, tableOutput("sc_tb"))
+                                              column(12, tableOutput("sc_tb1")),
+                                              column(8, tableOutput("sc_tb2")),
                                               #column(10, box(tableOutput("sc")))
                                             )
                                         

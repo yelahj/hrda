@@ -7,6 +7,8 @@ library(randomForest)
 library(ggplot2)
 library(cond)
 library(xgboost)
+library(smotefamily)
+library(DMwR)
 
 eda_data <- 
   data 
@@ -34,12 +36,15 @@ rfdata_test  <- eda_data[-idx,]
 ## 2.2. 모형적합 ------
 fit_ctrl <- trainControl(method = "repeatedcv", number = 3, repeats = 2)
 
-data_rf <- train(Attrition ~ ., 
-                 data = rfdata_train, 
-                 method = "rf", 
+data_rf <- train(Attrition ~ .,
+                 data = rfdata_train,
+                 method = "rf",
                  preProcess = c("scale", "center"),
                  trControl = fit_ctrl,
                  verbose = FALSE)
+
+# data_rf <- randomForest(Attrition~.,rfdata_train, importance=TRUE,ntree=500)
+# varImpPlot(data_rf)
 
 ## 2.3. 모형성능평가 ------
 rftest_predict <- predict(data_rf, rfdata_test)
@@ -100,7 +105,7 @@ formula = Attrition~.
 fitControl <- trainControl(method="cv", number = 3, classProbs = TRUE)
 
 xgbGrid <- expand.grid(nrounds = 50,
-                       max_depth = 12,
+                       max_depth = 20,
                        eta = .03,
                        gamma = 0.01,
                        colsample_bytree = .7,
@@ -111,8 +116,8 @@ xgbGrid <- expand.grid(nrounds = 50,
 xgbModel <- train(formula, data = xgbdata_train,
                    method = "xgbTree"
                    ,trControl = fitControl
-                   , verbose=0
-                   , maximize=FALSE
+                   ,verbose=0
+                   ,maximize=FALSE
                    ,tuneGrid = xgbGrid
 )
 
@@ -152,6 +157,10 @@ xgbROC<-
   plot.roc (as.numeric(xgbdata_test$Attrition), as.numeric(xgbPredict),lwd=2, type="b", print.auc=TRUE,col ="seagreen")
 
 
+
+
+
+
 # eda_data$Attrition <- as.integer(as.character(eda_data$Attrition)=="Yes")
 # eda_data$Attrition <-as.factor(eda_data$Attrition)
 
@@ -161,4 +170,90 @@ xgbROC<-
 
 
 # plot(rftest_predict)
-# plot(xgbPredict)
+
+
+
+
+# class imbalance problem -- XGBoost 
+
+Classcount = table(eda_data$Attrition)
+# Over Sampling
+over = ( (0.6 * max(Classcount)) - min(Classcount) ) / min(Classcount)
+# Under Sampling
+under = (0.4 * max(Classcount)) / (min(Classcount) * over)
+
+over = round(over, 1) * 100
+under = round(under, 1) * 100
+
+BalancedData = SMOTE(Attrition~., as.data.frame(xgbdata_train), perc.over = over, k = 5, perc.under = under)
+
+
+BalancedData %>%
+  group_by(Attrition) %>%
+  tally() %>%
+  ggplot(aes(x = Attrition, y = n,fill=Attrition)) +
+  geom_bar(stat = "identity") +
+  theme_minimal()+
+  labs(x="Attrition", y="Count of Attriation")+
+  ggtitle("Attrition")+
+  geom_text(aes(label = n), vjust = -0.5, position = position_dodge(0.9))
+
+# Now we try to run again XGBoost with the Balanced Data
+set.seed(123)
+xgbNewData <- BalancedData
+indexes = sample(1:nrow(xgbNewData), size=0.8*nrow(xgbNewData))
+BLtrain.Data <- xgbNewData[indexes,]
+BLtest.Data <- xgbNewData[-indexes,]
+
+formula = Attrition~.
+fitControl <- trainControl(method="cv", number = 3, classProbs = TRUE )
+xgbNewGrid <- expand.grid(nrounds = 50,
+                       max_depth = 20,
+                       eta = .03,
+                       gamma = 0.01,
+                       colsample_bytree = .7,
+                       min_child_weight = 1,
+                       subsample = 0.9
+)
+
+XGBNewModel = train(formula, data = BLtrain.Data,
+                   method = "xgbTree"
+                  ,trControl = fitControl
+                  ,verbose=0
+                  ,maximize=FALSE
+                  ,tuneGrid = xgbNewGrid
+                  ,na.action = na.pass
+)
+
+importance <- varImp(XGBNewModel)
+varImportance <- data.frame(Variables = row.names(importance[[1]]), 
+                            Importance = round(importance[[1]]$Overall,2))
+
+
+xgbNewTopPlot <-
+  varImportance %>%
+  as.data.frame() %>%
+  filter(!(Variables == "EmployeeNumber")) %>%
+  #rownames_to_column(var="Variable") %>%
+  ggplot(aes(x = reorder(Variables, Importance), y = Importance)) +
+  geom_bar(stat = "identity", fill = "darkred", alpha = 0.8) +
+  coord_flip() +
+  labs(y="중요도", x="요소") +
+  theme_minimal(base_family="NanumGothic")
+
+
+XGBNewPrdProb <- predict(XGBNewModel, BLtest.Data, type="prob")
+XGBNewPrd <- predict(XGBNewModel, BLtest.Data)
+confusionMatrix(XGBNewPrd, BLtest.Data$Attrition)
+
+
+
+data_xgbn_imp <- varImp(XGBNewModel, scale = TRUE)
+
+
+(top_ten_variable_n <- data_xgbn_imp$importance %>%
+    as.data.frame() %>%
+    rownames_to_column(var="variable") %>% 
+    filter(!(variable == "EmployeeNumber")) %>%
+    top_n(10, Overall) %>% 
+    pull(variable))

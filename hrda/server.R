@@ -6,10 +6,10 @@ shinyServer(function(input, output) {
 
   # valueBox
   output$employee <- renderValueBox({
-    valueBox(length(which(raw$Attrition == "No")),"재직자수", icon = icon("user"),color = "light-blue")
+    valueBox(length(which(raw$Attrition == "No")),"재직자수", icon = icon("user"),color = "green")
   })
   output$retirees <- renderValueBox({
-    valueBox(length(which(raw$Attrition == "Yes")),"퇴직자수", icon = icon("user-alt-slash"),color = "light-blue")
+    valueBox(length(which(raw$Attrition == "Yes")),"퇴직자수", icon = icon("user-alt-slash"),color = "red")
   })
   output$refresh <- renderValueBox({
     
@@ -57,7 +57,8 @@ shinyServer(function(input, output) {
     
     gdata <- data.frame(gender3,  path = c("path://m402.001 424.743v47.257c0 4.418-3.582 8-8 8s-8-3.582-8-8v-47.257c0-36.794-29.775-66.572-66.573-66.571-17.411 0-33.208-8.87-42.258-23.728-2.299-3.773-1.103-8.695 2.67-10.994 3.772-2.3 8.695-1.103 10.994 2.67 6.123 10.051 16.812 16.051 28.594 16.051 45.637 0 82.573 36.93 82.573 82.572zm-133.47-61.948-28.53 22.087-48.508-37.555c10.471-8.411 17.242-20.645 18.339-34.54 9.573 2.818 19.697 4.337 30.17 4.337 59 0 107-48 107-107 0-.622.014-56.012-.026-56.632-.272-4.328-3.881-7.493-7.974-7.493-1.37 0-11.227 1.95-20.876-3.855-15.048-9.053-15.125-28.897-15.124-29.096.039-6.5-7.311-10.336-12.622-6.579-32.952 23.327-71.536 39.145-113.433 45.01-4.375.613-7.426 4.656-6.813 9.032.56 4 3.986 6.892 7.913 6.892 1.26 0 27.2-3.175 56.687-13.885 18.998-6.9 37.201-15.904 54.268-26.833 5.897 22.126 22.434 34.435 42.001 35.546v47.893c0 50.178-40.822 91-91 91s-91-40.822-91-91v-56.124c0-4.418-3.582-8-8-8s-8 3.582-8 8v56.125c0 42.542 24.958 79.362 61 96.595v2.11c0 18.441-14.944 33.341-33.427 33.341-10.121 0-20.093 1.831-29.526 5.437l-5.165-4.111c-40.531-32.259-48.122-89.207-20.481-130.698 11.78-17.683 18.599-38.833 18.599-61.462v-43.333c0-50.731 41.271-92.004 92-92.004h48c50.729 0 92 41.271 92 92v43.333c0 22.011 6.401 43.221 18.511 61.336 22.148 33.131 22.104 76.614-.781 109.822-2.507 3.638-1.591 8.62 2.047 11.127 3.638 2.506 8.619 1.59 11.126-2.048 26.641-38.655 26.672-89.254.909-127.793-10.345-15.475-15.813-33.609-15.813-52.444v-43.333c0-59.551-48.449-108-108-108h-48c-59.551 0-108 48.451-108 108.004v43.329c0 18.78-5.503 36.967-15.916 52.597-32.255 48.422-23.114 114.278 23.327 151.671-22.814 14.966-37.411 40.382-37.411 69.142v47.257c0 4.418 3.582 8 8 8s8-3.582 8-8v-47.257c0-36.795 29.775-66.572 66.573-66.571 5.302 0 10.54-.841 15.563-2.498l58.966 45.651c2.884 2.232 6.912 2.232 9.795 0l33.427-25.879c3.494-2.705 4.133-7.729 1.428-11.223-2.704-3.492-7.728-4.133-11.223-1.428z",
                                            "path://m402.032 424.806v47.257c0 4.418-3.582 8-8 8s-8-3.582-8-8v-47.257c0-36.795-29.775-66.572-66.573-66.571-17.411 0-33.208-8.87-42.259-23.728-2.298-3.773-1.103-8.696 2.671-10.994 3.773-2.299 8.695-1.103 10.994 2.671 6.122 10.051 16.811 16.051 28.594 16.051 45.637-.002 82.573 36.93 82.573 82.571zm-139.606-80.193c.941 4.317-1.796 8.579-6.113 9.52-21.054 4.587-42.467-.005-59.516-11.642-16.878 18.087-39.176 15.744-36.191 15.744-36.795-.001-66.573 29.773-66.573 66.571v47.257c0 4.418-3.582 8-8 8s-8-3.582-8-8v-47.257c0-45.636 36.929-82.571 82.571-82.571 18.462 0 33.429-14.875 33.429-33.342v-2.107c-34.919-16.697-59.429-51.784-60.923-92.643-14.37-3.455-25.077-16.317-25.077-31.62v-41.473c-.437-20.3 2.577-71.143 39.648-106.877 45.775-44.126 119.183-41.323 173.161-15.338 5.261 2.535 6.06 9.643 1.691 13.324 27.345 6.67 50.925 23.48 66.074 47.538.782 1.239 2.214 3.184 1.84 6.287-.232 1.931-.807 3.565-2.295 5.075-9.75 9.888-15.119 22.991-15.119 36.896v54.57c0 4.418-3.582 8-8 8s-8-3.582-8-8v-54.57c0-16.037 5.479-31.259 15.542-43.487-15.338-21.936-39.268-36.044-66.332-38.942l-14.061-1.506c-8.222-.88-9.835-12.207-2.194-15.352l6.395-2.633c-83.286-29.035-172.351 3.226-172.351 114.928v41.56c0 6.348 3.656 11.865 9 14.636v-51.863c0-30.878 25.122-56 56-56h102c30.878 0 56 25.12 56 55.997v65.503c0 69.574-67.988 122.42-137.17 102.053-.45 5.708-1.871 11.216-4.186 16.336 13.458 9.242 30.453 12.97 47.23 9.314 4.317-.94 8.579 1.797 9.52 6.114zm-22.394-43.425c50.178 0 91-40.822 91-91v-64.895c0-22.054-17.944-39.997-40-39.997h-102c-22.056 0-40 17.944-40 40v64.892c0 50.178 40.822 91 91 91zm81 137.875h-24c-4.418 0-8 3.582-8 8s3.582 8 8 8h24c4.418 0 8-3.582 8-8s-3.582-8-8-8z"))
-
+    
+    
     gdata %>% 
       e_charts(Var1) %>% 
       e_x_axis(splitLine=list(show = FALSE), 
@@ -70,7 +71,7 @@ shinyServer(function(input, output) {
                axisLine=list(show=FALSE),
                axisLabel=list(show=FALSE)) %>%
       e_color(color = c('#69cce6','#A9A9A9')) %>%
-      e_pictorial(Freq, symbol = path, z=10, name= '실데이터', 
+      e_pictorial(Freq, symbol = path, z=10, name= '비율', 
                   symbolBoundingData= 100, symbolClip= TRUE) %>% 
       e_pictorial(Freq, symbol = path, name= '전체', 
                   symbolBoundingData= 100) %>% 
@@ -314,10 +315,10 @@ shinyServer(function(input, output) {
     #if (input$empno != "") {}
     
     sc <- x.scaled %>% 
-      filter(result.EmployeeNumber == input$empno )
+      filter(NewResult.EmployeeNumber == input$empno )
 
      sc <-
-       sc %>% select(-"result.EmployeeNumber")      
+       sc %>% select(-"NewResult.EmployeeNumber")      
     
     sc.pivot <- gather(sc, var, value) 
     
@@ -345,11 +346,13 @@ shinyServer(function(input, output) {
   
   output$attritionrate <- renderValueBox({
     input$empno
-    
+
     prob_att <- 
-      result %>%
+      NewResult %>%
       filter(EmployeeNumber == input$empno ) %>%
-      select(.pred_0) * 100
+      mutate_at(vars(No), ~ round(., 2)) %>%
+      select(No) * 100
+    
     
     
     if (is.null(prob_att)) {
@@ -364,7 +367,7 @@ shinyServer(function(input, output) {
     input$empno
     
     sc <- x.scaled %>% 
-      filter(result.EmployeeNumber == input$empno )
+      filter(NewResult.EmployeeNumber == input$empno )
 
     # sc <-
     #   sc %>% select(-"result.EmployeeNumber", -"EmployeeNumber")    
@@ -374,17 +377,35 @@ shinyServer(function(input, output) {
     formattable(sc.pivot, list())
   })
   
-  output$sc_tb <- renderTable({
+  output$sc_tb1 <- renderTable({
     input$submit
     input$empno
     
-    sc_tb <- result %>% 
-      select("EmployeeNumber", top_ten_variable_v) %>%
-      filter(EmployeeNumber == input$empno )
+    sc_tb <- NewResult %>% 
+      select("EmployeeNumber", top_ten_variable_n) %>%
+      filter(EmployeeNumber == 10 )
     
-    sc_tb <- gather(sc_tb, 변수, 실제값)
-    formattable(sc_tb, list())
+    sc_tb1 <- sc_tb[,2:6]
+    
+    #sc_tb <- gather(sc_tb, 변수, 실제값)
+    formattable(sc_tb1, list())
   })
+  
+  
+  output$sc_tb2 <- renderTable({
+    input$submit
+    input$empno
+    
+    sc_tb <- NewResult %>% 
+      select("EmployeeNumber", top_ten_variable_n) %>%
+      filter(EmployeeNumber == 10 )
+    
+
+    sc_tb2 <- sc_tb[,7:11]
+    
+    #sc_tb <- gather(sc_tb, 변수, 실제값)
+    formattable(sc_tb2, list())
+  })  
   
   # Heatmap
   output$gg1_3 <- renderPlot({
@@ -392,23 +413,40 @@ shinyServer(function(input, output) {
     str(eda_data)
     
     # # 각 변수별 상관관계
-    options(repr.plot.width=30, repr.plot.height=30)
+    options(repr.plot.width=150, repr.plot.height=150)
 
     nums <- select_if(eda_data, is.numeric)
 
     corr <- round(cor(nums), 1)
     
-    # ggcorrplot(corr, hc.order = TRUE, type = "lower",
-    #            outline.col = "white",
-    #            ggtheme = ggplot2::theme_minimal(),
-    #            colors = c("#FBDE72", "white", "#038DB2"))
+    ggcorrplot(corr, hc.order = TRUE, type = "lower",
+               outline.col = "white",
+               ggtheme = ggplot2::theme_minimal(),
+               colors = c("#FBDE72", "lightgrey", "#038DB2"))
     
-    ggcorr(corr,  nbreaks = 3,  color= "grey50", hjust = 1)
+    #ggcorr(corr,  nbreaks = 3,  color= "grey50", hjust = 1)
 
-  })
+  }, height=800)
   
   ###Visualize
   output$ggTop5 <- renderPlot({
+    
+    p1 <-  ggplot(raw,aes(OverTimeHours, fill=Attrition))+geom_density(color=NA,alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2")) +  theme(legend.position="none")
+    p2 <-  ggplot(raw,aes(JobLevel, fill = Attrition))+geom_density(color=NA, alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2")) +  theme(legend.position="none")
+    p3 <-  ggplot(raw,aes(MaritalStatus, fill=Attrition))+geom_bar(alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2")) +  theme(legend.position="none")
+    p4 <-  ggplot(raw,aes(Age, fill=Attrition))+geom_bar(alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2")) +  theme(legend.position="none")+  theme(legend.position="none")
+    p5 <-  ggplot(raw,aes(MonthlyIncome, fill = Attrition))+geom_density(color=NA,alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
+    p6 <-  ggplot(raw,aes(JobSatisfaction, fill = Attrition))+geom_density(color=NA,alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
+    p7 <-  ggplot(raw,aes(EnvironmentSatisfaction, fill = Attrition))+geom_density(color=NA,alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
+    p8 <-  ggplot(raw,aes(YearsWithCurrManager, fill = Attrition))+geom_density(color=NA,alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
+    p9 <-  ggplot(raw,aes(EducationField, fill = Attrition))+geom_bar(alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))+  theme(legend.position="none")
+    p10 <-  ggplot(raw,aes(JobRole, fill = Attrition))+geom_bar(alpha = 0.8)  + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))
+    
+    grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, nrow = 4)
+    
+  })  
+
+  output$ggTop5_rf <- renderPlot({
     
     p1 <-  ggplot(raw,aes(MonthlyIncome, fill=Attrition))+geom_density(alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))
     p2 <-  ggplot(raw,aes(OverTimeHours, fill = Attrition))+geom_density(alpha = 0.8) + theme_minimal() + scale_fill_manual(values = c("#FBB45C", "#038DB2"))
@@ -418,8 +456,9 @@ shinyServer(function(input, output) {
     
     grid.arrange(p1, p2, p3, p4, p5, nrow = 2)
     
-  })  
+  })    
   
+    
   output$rfTop <- renderPlot({
     
     rfTopPlot
@@ -431,6 +470,13 @@ shinyServer(function(input, output) {
     xgbTopPlot
     
   }) 
+
+  output$xgbNewTop <- renderPlot({
+    
+    xgbNewTopPlot
+    
+  }) 
+  
   
   
   output$roc_rf <- renderPlot({
@@ -456,6 +502,12 @@ shinyServer(function(input, output) {
     
     plot.roc(as.numeric(xgbdata_test$Attrition),as.numeric(xgbPredict),lwd=2, type="b", print.auc=TRUE,col ="seagreen")
     
+    
+  }) 
+  
+  output$roc_imb <- renderPlot({
+    
+      plot.roc (as.numeric(BLtest.Data$Attrition), as.numeric(XGBNewPrd),lwd=2, type="b", print.auc=TRUE, col ="darkred")
     
   }) 
   

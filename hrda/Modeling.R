@@ -14,7 +14,7 @@ rfdata_test$Gender <-
 rand_forest(trees=100, mode='classification') %>%
   set_engine('randomForest') %>%
   fit(Attrition~
-        + Age
+      + Age
       + DistanceFromHome
       + Education
       + EducationField
@@ -57,8 +57,43 @@ data_rg %>%
   metrics(truth=Attrition, estimate=.pred_class)
 
 # 시험데이터 예측
-x.scaled <- result %>% 
-  select(top_ten_variable_v)
+#x.scaled <- result %>% 
+#  select(top_ten_variable_v)
+
+
+# 상위 변수로 정규화
+#resc <- function(x) rescale(x,to = c(1, 5))
+
+#x.scaled <- data.frame(lapply(x.scaled, resc))
+
+# x.scaled <- data.frame(
+#   lapply(x.scaled, resc),  
+#   result$EmployeeNumber
+# ) 
+
+# rfdata_test %>% 
+#   filter(EmployeeNumber == 11)
+# 
+# rftest_predict <- predict(data_rf, rfdata_test)
+# 
+# 
+# sum(rftest_predict )
+
+
+
+# XGBoost !! 이상해~~
+XGBNewPlot <- plot.roc (as.numeric(BLtest.Data$Attrition), as.numeric(XGBNewPrd),lwd=2, type="b", print.auc=TRUE, col ="darkred")
+
+# plot(xgbPredict)
+NewResult =
+  XGB.model %>%
+  predict(xgbdata_test, type="prob") %>%
+  bind_cols(xgbdata_test)
+
+
+# 시험데이터 예측
+x.scaled <- NewResult %>% 
+  select(top_ten_variable_n)
 
 
 # 상위 변수로 정규화
@@ -68,13 +103,6 @@ x.scaled <- data.frame(lapply(x.scaled, resc))
 
 x.scaled <- data.frame(
   lapply(x.scaled, resc),  
-  result$EmployeeNumber
+  NewResult$EmployeeNumber
 ) 
 
-# rfdata_test %>% 
-#   filter(EmployeeNumber == 11)
-# 
-# rftest_predict <- predict(data_rf, rfdata_test)
-# 
-# 
-# sum(rftest_predict )
